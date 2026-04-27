@@ -7,11 +7,14 @@ let userData = {
     skills: [],
     languages: [],
     certifications: [],
-    settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', industry: '' },
+    projects: [],
+    awards: [],
+    publications: [],
+    settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', fontSize: '16px' },
     credits: 1
 };
 
-// ==================== AUTH SYSTEM ====================
+// ==================== AUTH ====================
 function simpleHash(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -32,16 +35,18 @@ function loadFromStorage(key) {
     if (raw) {
         try {
             const parsed = JSON.parse(raw);
+            // Merge with defaults to ensure all properties exist
             userData = {
-                personalInfo: { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '',
-                    summary: '', photo: '', ...(parsed.personalInfo || {}) },
+                personalInfo: Object.assign({ fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '', photo: '' }, parsed.personalInfo),
                 education: parsed.education || [],
                 experience: parsed.experience || [],
                 skills: parsed.skills || [],
                 languages: parsed.languages || [],
                 certifications: parsed.certifications || [],
-                settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter',
-                    borderRadius: '2px', industry: '', ...(parsed.settings || {}) },
+                projects: parsed.projects || [],
+                awards: parsed.awards || [],
+                publications: parsed.publications || [],
+                settings: Object.assign({ template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', fontSize: '16px' }, parsed.settings),
                 credits: parsed.credits ?? 1
             };
             return true;
@@ -61,12 +66,11 @@ document.getElementById('authSubmit').addEventListener('click', () => {
     currentUserKey = simpleHash(password);
     const exists = loadFromStorage(currentUserKey);
     if (!exists) {
-        // New user
         userData.credits = 1;
         saveToStorage();
-        showToast('🎉 New account created! You have 1 free export credit.', 'success');
+        showToast('New account created! 1 free export credit.', 'success');
     } else {
-        showToast('✅ Welcome back! Your data has been loaded.', 'success');
+        showToast('Welcome back! Data loaded.', 'success');
     }
     document.getElementById('authOverlay').classList.add('hidden');
     document.getElementById('appContainer').classList.add('active');
@@ -79,28 +83,13 @@ document.getElementById('authPassword').addEventListener('keydown', (e) => {
 });
 
 function logout() {
-    if (confirm('Logout? Your data is saved locally and will be available when you return with the same password.')) {
+    if (confirm('Logout? Your data is saved locally.')) {
         saveToStorage();
-        currentUserKey = null;
-        userData = {
-            personalInfo: { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '',
-                summary: '', photo: '' },
-            education: [],
-            experience: [],
-            skills: [],
-            languages: [],
-            certifications: [],
-            settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px',
-                industry: '' },
-            credits: 1
-        };
-        document.getElementById('appContainer').classList.remove('active');
-        document.getElementById('authOverlay').classList.remove('hidden');
-        document.getElementById('authPassword').value = '';
+        location.reload(); // simplest reset
     }
 }
 
-// ==================== INIT APP ====================
+// ==================== INIT ====================
 function initApp() {
     document.getElementById('fullName').value = userData.personalInfo.fullName || '';
     document.getElementById('jobTitle').value = userData.personalInfo.jobTitle || '';
@@ -117,7 +106,7 @@ function initApp() {
     document.getElementById('accentColorPicker').value = userData.settings.accentColor || '#6c5ce7';
     document.getElementById('fontStylePicker').value = userData.settings.fontStyle || 'inter';
     document.getElementById('borderRadiusPicker').value = userData.settings.borderRadius || '2px';
-    document.getElementById('industryPreset').value = userData.settings.industry || '';
+    document.getElementById('fontSizePicker').value = userData.settings.fontSize || '16px';
     applyCustomizations(true);
     rebuildAllDynamicEntries();
     updatePreview();
@@ -144,10 +133,14 @@ function rebuildAllDynamicEntries() {
     rebuildEntries('skillsEntries', userData.skills, createSkillHTML, 'skills');
     rebuildEntries('languagesEntries', userData.languages, createLanguageHTML, 'languages');
     rebuildEntries('certificationsEntries', userData.certifications, createCertificationHTML, 'certifications');
+    rebuildEntries('projectsEntries', userData.projects, createProjectHTML, 'projects');
+    rebuildEntries('awardsEntries', userData.awards, createAwardHTML, 'awards');
+    rebuildEntries('publicationsEntries', userData.publications, createPublicationHTML, 'publications');
 }
 
 function rebuildEntries(containerId, dataArray, htmlFn, type) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     container.innerHTML = '';
     dataArray.forEach((entry, index) => {
         const div = document.createElement('div');
@@ -155,7 +148,7 @@ function rebuildEntries(containerId, dataArray, htmlFn, type) {
         div.innerHTML = htmlFn(entry, index);
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-entry';
-        removeBtn.textContent = '✕';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
         removeBtn.title = 'Remove';
         removeBtn.onclick = () => {
             dataArray.splice(index, 1);
@@ -182,20 +175,29 @@ function updateEntryFromDOM(type, index, div) {
         if (inp.dataset.field) data[inp.dataset.field] = inp.value;
     });
     const arrayMap = {
-        'education': userData.education,
-        'experience': userData.experience,
-        'skills': userData.skills,
-        'languages': userData.languages,
-        'certifications': userData.certifications
+        education: userData.education,
+        experience: userData.experience,
+        skills: userData.skills,
+        languages: userData.languages,
+        certifications: userData.certifications,
+        projects: userData.projects,
+        awards: userData.awards,
+        publications: userData.publications
     };
     if (arrayMap[type] && arrayMap[type][index]) {
         Object.assign(arrayMap[type][index], data);
     }
 }
 
-function createEducationHTML(entry, index) {
-    return `
-    <div class="form-row">
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// --- Entry HTML creators ---
+function createEducationHTML(entry) {
+    return `<div class="form-row">
       <div class="form-group"><label>Degree</label><input type="text" data-field="degree" value="${escapeHTML(entry.degree || '')}" placeholder="BSc Computer Science"></div>
       <div class="form-group"><label>Institution</label><input type="text" data-field="institution" value="${escapeHTML(entry.institution || '')}" placeholder="LUMS"></div>
     </div>
@@ -204,10 +206,8 @@ function createEducationHTML(entry, index) {
       <div class="form-group"><label>Grade / CGPA</label><input type="text" data-field="grade" value="${escapeHTML(entry.grade || '')}" placeholder="3.8 / 4.0"></div>
     </div>`;
 }
-
-function createExperienceHTML(entry, index) {
-    return `
-    <div class="form-row">
+function createExperienceHTML(entry) {
+    return `<div class="form-row">
       <div class="form-group"><label>Job Title</label><input type="text" data-field="jobTitle" value="${escapeHTML(entry.jobTitle || '')}" placeholder="Senior Developer"></div>
       <div class="form-group"><label>Company</label><input type="text" data-field="company" value="${escapeHTML(entry.company || '')}" placeholder="Systems Limited"></div>
     </div>
@@ -215,14 +215,12 @@ function createExperienceHTML(entry, index) {
       <div class="form-group"><label>Start Date</label><input type="text" data-field="startDate" value="${escapeHTML(entry.startDate || '')}" placeholder="Jan 2022"></div>
       <div class="form-group"><label>End Date</label><input type="text" data-field="endDate" value="${escapeHTML(entry.endDate || '')}" placeholder="Present"></div>
     </div>
-    <div class="form-group"><label>Description</label><textarea data-field="description" rows="2" placeholder="Key responsibilities and achievements...">${escapeHTML(entry.description || '')}</textarea></div>`;
+    <div class="form-group"><label>Description</label><textarea data-field="description" rows="2" placeholder="Responsibilities...">${escapeHTML(entry.description || '')}</textarea></div>`;
 }
-
-function createSkillHTML(entry, index) {
-    return `
-    <div class="form-row">
-      <div class="form-group"><label>Skill Name</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="React.js"></div>
-      <div class="form-group"><label>Proficiency</label><select data-field="level">
+function createSkillHTML(entry) {
+    return `<div class="form-row">
+      <div class="form-group"><label>Skill</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="React.js"></div>
+      <div class="form-group"><label>Level</label><select data-field="level">
         <option value="Beginner" ${entry.level==='Beginner'?'selected':''}>Beginner</option>
         <option value="Intermediate" ${entry.level==='Intermediate'?'selected':''}>Intermediate</option>
         <option value="Advanced" ${entry.level==='Advanced'?'selected':''}>Advanced</option>
@@ -230,10 +228,8 @@ function createSkillHTML(entry, index) {
       </select></div>
     </div>`;
 }
-
-function createLanguageHTML(entry, index) {
-    return `
-    <div class="form-row">
+function createLanguageHTML(entry) {
+    return `<div class="form-row">
       <div class="form-group"><label>Language</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="Urdu"></div>
       <div class="form-group"><label>Proficiency</label><select data-field="proficiency">
         <option value="Native" ${entry.proficiency==='Native'?'selected':''}>Native</option>
@@ -243,50 +239,70 @@ function createLanguageHTML(entry, index) {
       </select></div>
     </div>`;
 }
-
-function createCertificationHTML(entry, index) {
-    return `
-    <div class="form-row">
-      <div class="form-group"><label>Certification Name</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="AWS Solutions Architect"></div>
+function createCertificationHTML(entry) {
+    return `<div class="form-row">
+      <div class="form-group"><label>Certification</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="AWS Solutions Architect"></div>
       <div class="form-group"><label>Issuer</label><input type="text" data-field="issuer" value="${escapeHTML(entry.issuer || '')}" placeholder="Amazon"></div>
     </div>
     <div class="form-group"><label>Year</label><input type="text" data-field="year" value="${escapeHTML(entry.year || '')}" placeholder="2023"></div>`;
 }
-
-function escapeHTML(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+function createProjectHTML(entry) {
+    return `<div class="form-row">
+      <div class="form-group"><label>Project Name</label><input type="text" data-field="name" value="${escapeHTML(entry.name || '')}" placeholder="E‑Commerce Website"></div>
+      <div class="form-group"><label>Role / Tech</label><input type="text" data-field="role" value="${escapeHTML(entry.role || '')}" placeholder="Lead Developer (React, Node)"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Year</label><input type="text" data-field="year" value="${escapeHTML(entry.year || '')}" placeholder="2024"></div>
+      <div class="form-group"><label>Link</label><input type="text" data-field="link" value="${escapeHTML(entry.link || '')}" placeholder="https://github.com/..."></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea data-field="description" rows="2" placeholder="Brief overview...">${escapeHTML(entry.description || '')}</textarea></div>`;
+}
+function createAwardHTML(entry) {
+    return `<div class="form-row">
+      <div class="form-group"><label>Award Title</label><input type="text" data-field="title" value="${escapeHTML(entry.title || '')}" placeholder="Employee of the Year"></div>
+      <div class="form-group"><label>Issuer</label><input type="text" data-field="issuer" value="${escapeHTML(entry.issuer || '')}" placeholder="Systems Limited"></div>
+    </div>
+    <div class="form-group"><label>Year</label><input type="text" data-field="year" value="${escapeHTML(entry.year || '')}" placeholder="2025"></div>`;
+}
+function createPublicationHTML(entry) {
+    return `<div class="form-row">
+      <div class="form-group"><label>Title</label><input type="text" data-field="title" value="${escapeHTML(entry.title || '')}" placeholder="Advanced Algorithms in Python"></div>
+      <div class="form-group"><label>Publisher / Journal</label><input type="text" data-field="publisher" value="${escapeHTML(entry.publisher || '')}" placeholder="IEEE"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Year</label><input type="text" data-field="year" value="${escapeHTML(entry.year || '')}" placeholder="2025"></div>
+      <div class="form-group"><label>Link</label><input type="text" data-field="link" value="${escapeHTML(entry.link || '')}" placeholder="https://doi.org/..."></div>
+    </div>`;
 }
 
-function addEducation() { userData.education.push({ degree: '', institution: '', year: '', grade: '' }); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
-function addExperience() { userData.experience.push({ jobTitle: '', company: '', startDate: '', endDate: '', description: '' }); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
-function addSkill() { userData.skills.push({ name: '', level: 'Intermediate' }); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
-function addLanguage() { userData.languages.push({ name: '', proficiency: 'Fluent' }); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
-function addCertification() { userData.certifications.push({ name: '', issuer: '', year: '' }); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+// Add functions
+function addEducation(){ userData.education.push({degree:'',institution:'',year:'',grade:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addExperience(){ userData.experience.push({jobTitle:'',company:'',startDate:'',endDate:'',description:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addSkill(){ userData.skills.push({name:'',level:'Intermediate'}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addLanguage(){ userData.languages.push({name:'',proficiency:'Fluent'}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addCertification(){ userData.certifications.push({name:'',issuer:'',year:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addProject(){ userData.projects.push({name:'',role:'',year:'',link:'',description:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addAward(){ userData.awards.push({title:'',issuer:'',year:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
+function addPublication(){ userData.publications.push({title:'',publisher:'',year:'',link:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
 
-// ==================== PHOTO UPLOAD ====================
+// ==================== PHOTO ====================
 function handlePhotoUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-        showToast('Photo must be under 5MB', 'error');
-        return;
-    }
+    if (file.size > 5 * 1024 * 1024) { showToast('Photo must be under 5MB', 'error'); return; }
     const reader = new FileReader();
     reader.onload = function(e) {
         userData.personalInfo.photo = e.target.result;
         document.getElementById('photoPreview').src = e.target.result;
         updatePreview();
         saveToStorage();
-        showToast('📷 Photo uploaded!', 'success');
+        showToast('Photo uploaded!', 'success');
     };
     reader.readAsDataURL(file);
 }
-
 function removePhoto() {
     userData.personalInfo.photo = '';
-    document.getElementById('photoPreview').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Crect fill='%23ddd' width='70' height='70'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='24'%3E👤%3C/text%3E%3C/svg%3E";
+    document.getElementById('photoPreview').src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ccc'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='%23888' font-size='40'%3E%3C/text%3E%3C/svg%3E";
     updatePreview();
     saveToStorage();
     showToast('Photo removed', 'success');
@@ -294,6 +310,7 @@ function removePhoto() {
 
 // ==================== UPDATE PREVIEW ====================
 function updatePreview() {
+    // Sync inputs
     userData.personalInfo.fullName = document.getElementById('fullName').value;
     userData.personalInfo.jobTitle = document.getElementById('jobTitle').value;
     userData.personalInfo.email = document.getElementById('email').value;
@@ -308,115 +325,84 @@ function updatePreview() {
     const settings = userData.settings;
     const accent = settings.accentColor || '#6c5ce7';
 
-    let html = '';
-
-    html += '<div class="cv-header">';
-    if (pi.photo) {
-        html += `<img src="${pi.photo}" alt="Profile Photo" style="border-color:${accent};">`;
-    }
-    html += '<div class="cv-header-info">';
-    html += `<h1 style="color:#1a1a2e;">${escapeHTML(pi.fullName || 'Your Name')}</h1>`;
-    html += `<div class="cv-title" style="color:${accent};font-weight:600;">${escapeHTML(pi.jobTitle || 'Job Title')}</div>`;
-    html += '<div class="cv-contact-row">';
-    if (pi.email) html += `<span>📧 ${escapeHTML(pi.email)}</span>`;
-    if (pi.phone) html += `<span>📱 ${escapeHTML(pi.phone)}</span>`;
-    if (pi.location) html += `<span>📍 ${escapeHTML(pi.location)}</span>`;
-    if (pi.website) html += `<span>🔗 ${escapeHTML(pi.website)}</span>`;
-    html += '</div></div></div>';
-
-    if (pi.summary) {
-        html += `<div class="cv-summary" style="border-left:3px solid ${accent};padding-left:1rem;">${escapeHTML(pi.summary)}</div>`;
-    }
-
-    if (userData.education.length > 0) {
-        html += '<div class="cv-section"><h2>Education</h2>';
-        userData.education.forEach(e => {
-            html += '<div class="item">';
-            html += `<h3>${escapeHTML(e.degree || 'Degree')} ${e.grade ? '— ' + escapeHTML(e.grade) : ''}</h3>`;
-            html += `<div class="sub">${escapeHTML(e.institution || 'Institution')} | ${escapeHTML(e.year || 'Year')}</div>`;
-            html += '</div>';
-        });
-        html += '</div>';
-    }
-
-    if (userData.experience.length > 0) {
-        html += '<div class="cv-section"><h2>Experience</h2>';
-        userData.experience.forEach(e => {
-            html += '<div class="item">';
-            html += `<h3>${escapeHTML(e.jobTitle || 'Job Title')} — ${escapeHTML(e.company || 'Company')}</h3>`;
-            html += `<div class="sub">${escapeHTML(e.startDate || 'Start')} — ${escapeHTML(e.endDate || 'End')}</div>`;
-            if (e.description) html += `<p>${escapeHTML(e.description)}</p>`;
-            html += '</div>';
-        });
-        html += '</div>';
-    }
-
-    if (userData.skills.length > 0) {
-        html += '<div class="cv-section"><h2>Skills</h2><div class="cv-skills-bar">';
-        userData.skills.forEach(s => {
-            const bgOpacity = s.level === 'Expert' ? '0.25' : s.level === 'Advanced' ? '0.18' : '0.1';
-            html += `<span class="cv-skill-tag" style="background:${accent}${Math.round(parseFloat(bgOpacity)*255).toString(16).padStart(2,'0')};color:#1a1a2e;border:1px solid ${accent}40;">${escapeHTML(s.name || 'Skill')} (${escapeHTML(s.level || 'Level')})</span>`;
-        });
-        html += '</div></div>';
-    }
-
-    if (userData.languages.length > 0) {
-        html += '<div class="cv-section"><h2>Languages</h2>';
-        userData.languages.forEach(l => {
-            html += `<div class="item"><strong>${escapeHTML(l.name || 'Language')}</strong> — ${escapeHTML(l.proficiency || 'Proficiency')}</div>`;
-        });
-        html += '</div>';
-    }
-
-    if (userData.certifications.length > 0) {
-        html += '<div class="cv-section"><h2>Certifications</h2>';
-        userData.certifications.forEach(c => {
-            html += '<div class="item">';
-            html += `<h3>${escapeHTML(c.name || 'Certification')} ${c.year ? '(' + escapeHTML(c.year) + ')' : ''}</h3>`;
-            html += `<div class="sub">${escapeHTML(c.issuer || 'Issuer')}</div>`;
-            html += '</div>';
-        });
-        html += '</div>';
-    }
+    let html = `
+    <div class="cv-sidebar">
+      <div class="cv-photo-section">
+        ${pi.photo ? `<img src="${pi.photo}" alt="Profile" class="cv-photo">` : ''}
+        <h1 class="cv-name">${escapeHTML(pi.fullName || 'Your Name')}</h1>
+        <div class="cv-title-role">${escapeHTML(pi.jobTitle || 'Job Title')}</div>
+      </div>
+      <div class="cv-contact-details">
+        ${pi.email ? `<div class="cv-contact-item"><i class="fas fa-envelope cv-icon"></i>${escapeHTML(pi.email)}</div>` : ''}
+        ${pi.phone ? `<div class="cv-contact-item"><i class="fas fa-phone cv-icon"></i>${escapeHTML(pi.phone)}</div>` : ''}
+        ${pi.location ? `<div class="cv-contact-item"><i class="fas fa-map-marker-alt cv-icon"></i>${escapeHTML(pi.location)}</div>` : ''}
+        ${pi.website ? `<div class="cv-contact-item"><i class="fas fa-link cv-icon"></i>${escapeHTML(pi.website)}</div>` : ''}
+      </div>
+      <div class="cv-sidebar-section">
+        <h3 class="cv-sidebar-heading">Skills</h3>
+        ${userData.skills.length === 0 ? '<p class="cv-empty">Add skills in the form</p>' :
+          userData.skills.map(s => `
+            <div class="cv-skill-item">
+              <div class="cv-skill-name">${escapeHTML(s.name || 'Skill')}</div>
+              <div class="cv-skill-bar">
+                <div class="cv-skill-fill" style="width:${s.level==='Expert'?'95':s.level==='Advanced'?'75':s.level==='Intermediate'?'50':'25'}%; background:${accent};"></div>
+              </div>
+            </div>
+          `).join('')
+        }
+      </div>
+      <div class="cv-sidebar-section">
+        <h3 class="cv-sidebar-heading">Languages</h3>
+        ${userData.languages.length === 0 ? '<p class="cv-empty">Add languages</p>' :
+          userData.languages.map(l => `
+            <div class="cv-language-item"><strong>${escapeHTML(l.name || 'Language')}</strong> – ${escapeHTML(l.proficiency || 'Proficiency')}</div>
+          `).join('')
+        }
+      </div>
+    </div>
+    <div class="cv-main">
+      ${pi.summary ? `<div class="cv-section"><h2 class="cv-section-heading">Professional Summary</h2><p class="cv-summary">${escapeHTML(pi.summary)}</p></div>` : ''}
+      ${userData.education.length ? `<div class="cv-section"><h2 class="cv-section-heading">Education</h2>${userData.education.map(e => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(e.degree || 'Degree')}${e.grade ? ' – ' + escapeHTML(e.grade) : ''}</div><div class="cv-entry-sub">${escapeHTML(e.institution || 'Institution')} | ${escapeHTML(e.year || 'Year')}</div></div>`).join('')}</div>` : ''}
+      ${userData.experience.length ? `<div class="cv-section"><h2 class="cv-section-heading">Experience</h2>${userData.experience.map(e => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(e.jobTitle || 'Job Title')} — ${escapeHTML(e.company || 'Company')}</div><div class="cv-entry-sub">${escapeHTML(e.startDate || 'Start')} – ${escapeHTML(e.endDate || 'End')}</div>${e.description ? `<p class="cv-entry-desc">${escapeHTML(e.description)}</p>` : ''}</div>`).join('')}</div>` : ''}
+      ${userData.certifications.length ? `<div class="cv-section"><h2 class="cv-section-heading">Certifications</h2>${userData.certifications.map(c => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(c.name || 'Certification')} ${c.year ? '(' + escapeHTML(c.year) + ')' : ''}</div><div class="cv-entry-sub">${escapeHTML(c.issuer || 'Issuer')}</div></div>`).join('')}</div>` : ''}
+      ${userData.projects.length ? `<div class="cv-section"><h2 class="cv-section-heading">Projects</h2>${userData.projects.map(p => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(p.name || 'Project')} ${p.role ? '— ' + escapeHTML(p.role) : ''}</div><div class="cv-entry-sub">${escapeHTML(p.year || 'Year')}${p.link ? ' · <a href="'+escapeHTML(p.link)+'" target="_blank" style=\"color:'+accent+';\">Link</a>' : ''}</div>${p.description ? `<p class="cv-entry-desc">${escapeHTML(p.description)}</p>` : ''}</div>`).join('')}</div>` : ''}
+      ${userData.awards.length ? `<div class="cv-section"><h2 class="cv-section-heading">Awards & Honors</h2>${userData.awards.map(a => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(a.title || 'Award')}</div><div class="cv-entry-sub">${escapeHTML(a.issuer || 'Issuer')} · ${escapeHTML(a.year || 'Year')}</div></div>`).join('')}</div>` : ''}
+      ${userData.publications.length ? `<div class="cv-section"><h2 class="cv-section-heading">Publications</h2>${userData.publications.map(pub => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(pub.title || 'Publication')}</div><div class="cv-entry-sub">${escapeHTML(pub.publisher || 'Publisher')} · ${escapeHTML(pub.year || 'Year')}${pub.link ? ' · <a href="'+escapeHTML(pub.link)+'" target="_blank" style=\"color:'+accent+';\">View</a>' : ''}</div></div>`).join('')}</div>` : ''}
+    </div>`;
 
     cvInner.innerHTML = html;
 
     const cvPage = document.getElementById('cvPage');
-    const fontMap = {
-        'inter': "'Inter', 'Helvetica Neue', sans-serif",
-        'playfair': "'Playfair Display', 'Georgia', serif",
-        'poppins': "'Poppins', 'Segoe UI', sans-serif",
-        'jetbrains': "'JetBrains Mono', 'Consolas', monospace"
-    };
-    cvPage.style.fontFamily = fontMap[settings.fontStyle] || fontMap['inter'];
+    const fontMap = { inter: 'Inter, sans-serif', playfair: 'Playfair Display, serif', poppins: 'Poppins, sans-serif', jetbrains: 'JetBrains Mono, monospace' };
+    cvPage.style.fontFamily = fontMap[settings.fontStyle] || 'Inter, sans-serif';
+    cvPage.style.fontSize = settings.fontSize || '16px';
     cvPage.style.setProperty('--cv-accent', accent);
 }
 
-// ==================== TEMPLATE SWITCHING ====================
-function setTemplate(templateName, silent = false) {
-    userData.settings.template = templateName;
+// ==================== TEMPLATES ====================
+function setTemplate(name, silent = false) {
+    userData.settings.template = name;
     const cvPage = document.getElementById('cvPage');
     cvPage.classList.remove('classic', 'modern', 'creative');
-    cvPage.classList.add(templateName);
+    cvPage.classList.add(name);
     document.querySelectorAll('[data-template]').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.querySelector(`[data-template="${templateName}"]`);
+    const activeBtn = document.querySelector(`[data-template="${name}"]`);
     if (activeBtn) activeBtn.classList.add('active');
     updatePreview();
     saveToStorage();
-    if (!silent) showToast(`📄 Template: ${templateName.charAt(0).toUpperCase() + templateName.slice(1)}`, 'success');
+    if (!silent) showToast(`Template set to ${name.charAt(0).toUpperCase() + name.slice(1)}`, 'success');
 }
 
 // ==================== INDUSTRY PRESETS ====================
 function applyIndustryPreset(industry) {
     if (!industry) return;
-    userData.settings.industry = industry;
     const presets = {
-        'banking': { accent: '#1a3c6e', summary: 'Dedicated financial professional with expertise in banking operations, risk management, and customer relationship management within Pakistan\'s leading financial institutions.' },
-        'it': { accent: '#0d7377', summary: 'Innovative technology professional skilled in software development, cloud infrastructure, and digital transformation for Pakistan\'s growing IT sector.' },
-        'telecom': { accent: '#2d8a4e', summary: 'Experienced telecommunications specialist with a passion for connectivity and network solutions in Pakistan\'s dynamic telecom industry.' },
-        'textile': { accent: '#8b5e3c', summary: 'Skilled professional in textile manufacturing and supply chain management, contributing to Pakistan\'s premier textile export industry.' },
-        'education': { accent: '#4a3f6b', summary: 'Passionate educator committed to academic excellence and student development within Pakistan\'s educational institutions.' },
-        'healthcare': { accent: '#2e7d6f', summary: 'Compassionate healthcare professional dedicated to improving patient outcomes in Pakistan\'s medical facilities.' }
+        banking: { accent: '#1a3c6e', summary: 'Dedicated financial professional with expertise in banking operations, risk management, and customer relationship management within Pakistan\'s leading financial institutions.' },
+        it: { accent: '#0d7377', summary: 'Innovative technology professional skilled in software development, cloud infrastructure, and digital transformation for Pakistan\'s growing IT sector.' },
+        telecom: { accent: '#2d8a4e', summary: 'Experienced telecommunications specialist with a passion for connectivity and network solutions in Pakistan\'s dynamic telecom industry.' },
+        textile: { accent: '#8b5e3c', summary: 'Skilled professional in textile manufacturing and supply chain management, contributing to Pakistan\'s premier textile export industry.' },
+        education: { accent: '#4a3f6b', summary: 'Passionate educator committed to academic excellence and student development within Pakistan\'s educational institutions.' },
+        healthcare: { accent: '#2e7d6f', summary: 'Compassionate healthcare professional dedicated to improving patient outcomes in Pakistan\'s medical facilities.' }
     };
     const preset = presets[industry];
     if (preset) {
@@ -427,7 +413,7 @@ function applyIndustryPreset(industry) {
         applyCustomizations(true);
         updatePreview();
         saveToStorage();
-        showToast(`🏭 Applied ${industry.replace('_',' ')} preset!`, 'success');
+        showToast(`Applied ${industry.replace('_', ' ')} preset`, 'success');
     }
     document.getElementById('industryPreset').value = '';
 }
@@ -437,69 +423,53 @@ function applyCustomizations(silent = false) {
     userData.settings.accentColor = document.getElementById('accentColorPicker').value;
     userData.settings.fontStyle = document.getElementById('fontStylePicker').value;
     userData.settings.borderRadius = document.getElementById('borderRadiusPicker').value;
+    userData.settings.fontSize = document.getElementById('fontSizePicker').value;
     const cvPage = document.getElementById('cvPage');
     cvPage.style.setProperty('--cv-accent', userData.settings.accentColor);
-    const fontMap = {
-        'inter': "'Inter', 'Helvetica Neue', sans-serif",
-        'playfair': "'Playfair Display', 'Georgia', serif",
-        'poppins': "'Poppins', 'Segoe UI', sans-serif",
-        'jetbrains': "'JetBrains Mono', 'Consolas', monospace"
-    };
-    cvPage.style.fontFamily = fontMap[userData.settings.fontStyle] || fontMap['inter'];
+    const fontMap = { inter: 'Inter, sans-serif', playfair: 'Playfair Display, serif', poppins: 'Poppins, sans-serif', jetbrains: 'JetBrains Mono, monospace' };
+    cvPage.style.fontFamily = fontMap[userData.settings.fontStyle] || 'Inter, sans-serif';
+    cvPage.style.fontSize = userData.settings.fontSize;
     cvPage.style.borderRadius = userData.settings.borderRadius;
     updatePreview();
     saveToStorage();
-    if (!silent) showToast('🎨 Customization applied!', 'success');
+    if (!silent) showToast('Customizations applied!', 'success');
 }
+function openCustomization() { document.getElementById('customizationModal').classList.add('active'); }
+function closeCustomization() { document.getElementById('customizationModal').classList.remove('active'); }
 
-function openCustomization() {
-    document.getElementById('customizationModal').classList.add('active');
-}
-function closeCustomization() {
-    document.getElementById('customizationModal').classList.remove('active');
-}
-
-// ==================== CREDITS & PAYMENT ====================
+// ==================== CREDITS ====================
 function updateCreditDisplay() {
     document.getElementById('creditCount').textContent = userData.credits;
-    document.getElementById('modalCreditCount').textContent = userData.credits;
 }
-
-function openPaymentModal() {
-    updateCreditDisplay();
-    document.getElementById('paymentModal').classList.add('active');
-}
-function closePaymentModal() {
-    document.getElementById('paymentModal').classList.remove('active');
-}
-
+function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
+function closePaymentModal() { document.getElementById('paymentModal').classList.remove('active'); }
 function simulatePayment(method) {
     userData.credits += 3;
     updateCreditDisplay();
     saveToStorage();
     closePaymentModal();
-    showToast(`✅ Simulated ${method} payment successful! +3 credits added.`, 'success');
+    showToast(`Simulated ${method} payment! +3 credits.`, 'success');
 }
 
 // ==================== EXPORT PDF ====================
 function exportPDF() {
     if (userData.credits <= 0) {
-        showToast('⚠️ No credits remaining! Please buy more to export.', 'error');
+        showToast('No credits left! Buy more to export.', 'error');
         openPaymentModal();
         return;
     }
-    if (!confirm(`You have ${userData.credits} credit(s). Exporting will use 1 credit.\n\nThe CV will open in the print dialog. Choose "Save as PDF" as the destination.\n\nContinue?`)) return;
+    if (!confirm(`Export uses 1 credit. Continue?`)) return;
     userData.credits--;
     updateCreditDisplay();
     saveToStorage();
     updatePreview();
     setTimeout(() => {
         window.print();
-        showToast('📥 Print dialog opened. Select "Save as PDF" to export.', 'success');
+        showToast('Print dialog opened. Choose "Save as PDF".', 'success');
     }, 300);
 }
 
-// ==================== TOAST SYSTEM ====================
+// ==================== TOAST ====================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -507,33 +477,19 @@ function showToast(message, type = 'success') {
     toast.textContent = message;
     container.appendChild(toast);
     toast.addEventListener('animationend', (e) => {
-        if (e.animationName === 'toastOut') {
-            toast.remove();
-        }
+        if (e.animationName === 'toastOut') toast.remove();
     });
-    setTimeout(() => {
-        if (toast.parentNode) toast.remove();
-    }, 3000);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
 }
 
-// ==================== MODAL CLOSE ON OVERLAY CLICK ====================
-document.getElementById('paymentModal').addEventListener('click', function(e) {
-    if (e.target === this) closePaymentModal();
-});
-document.getElementById('customizationModal').addEventListener('click', function(e) {
-    if (e.target === this) closeCustomization();
-});
+// ==================== MODAL CLOSE ====================
+document.getElementById('paymentModal').addEventListener('click', function(e) { if (e.target === this) closePaymentModal(); });
+document.getElementById('customizationModal').addEventListener('click', function(e) { if (e.target === this) closeCustomization(); });
 
-// ==================== KEYBOARD SHORTCUTS ====================
+// Keyboard shortcut
 document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.key === 'e') {
-        e.preventDefault();
-        exportPDF();
-    }
+    if (e.ctrlKey && e.key === 'e') { e.preventDefault(); exportPDF(); }
 });
 
-// ==================== INITIAL STATE ====================
-updateCreditDisplay();
-console.log('🚀 CV Builder Pro ready. Enter a password to begin.');
-console.log('📋 Features: Split-screen builder | 3 Templates | Industry Presets | Photo Upload | Credit System | PDF Export');
-console.log('💡 Tip: Use Ctrl+E to quickly export your CV!');
+// ==================== READY ====================
+console.log('CV Builder Pro ready');

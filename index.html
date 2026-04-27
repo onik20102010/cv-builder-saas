@@ -2,77 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CV Builder Pro</title>
-    <link href="https://fonts.googleapis.com/..." rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (real icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- Background orbs -->
+    <!-- Animated background orbs -->
     <div class="bg-orb bg-orb-1"></div>
     <div class="bg-orb bg-orb-2"></div>
     <div class="bg-orb bg-orb-3"></div>
 
-    <!-- Auth Overlay -->
+    <!-- ============= AUTH OVERLAY ============= -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-card">
-            <div class="auth-icon">📄</div>
+            <div class="auth-icon"><i class="fas fa-file-alt"></i></div>
             <h2>CV Builder Pro</h2>
-            <p>Create a short password to save your progress.<br>All data stays private on your device.</p>
+            <p>Create a password to save your progress. Everything stays on your device.</p>
             <div class="input-group">
-                <input type="password" id="authPassword" placeholder="Enter a password (min 4 characters)" autocomplete="off">
+                <input type="password" id="authPassword" placeholder="Min. 4 characters" autocomplete="off">
             </div>
-            <button class="btn btn-primary" id="authSubmit">🔐 Enter / Create Account</button>
-            <p style="font-size:0.7rem;margin-top:1rem;color:var(--text-muted);">Your password creates a secure local account. No data is sent anywhere.</p>
+            <button class="btn btn-primary" id="authSubmit">
+                <i class="fas fa-lock"></i> Enter / Create Account
+            </button>
+            <p class="auth-note">No data is ever sent anywhere – fully private.</p>
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- ============= MAIN APP ============= -->
     <div class="app-container" id="appContainer">
+
         <!-- Top Bar -->
         <div class="top-bar" id="topBar">
-            <span class="logo">✦ CV Builder Pro</span>
-            <button class="btn btn-sm btn-accent-outline active" data-template="classic" onclick="setTemplate('classic')">Classic</button>
-            <button class="btn btn-sm btn-accent-outline" data-template="modern" onclick="setTemplate('modern')">Modern</button>
-            <button class="btn btn-sm btn-accent-outline" data-template="creative" onclick="setTemplate('creative')">Creative</button>
-            <select id="industryPreset" onchange="applyIndustryPreset(this.value)" style="padding:0.4rem 0.6rem;border-radius:20px;background:rgba(255,255,255,0.04);border:1px solid var(--border-medium);color:var(--text-primary);font-size:0.72rem;cursor:pointer;font-family:var(--font-ui);">
-                <option value="">🏭 Industry Preset (Pakistan)</option>
-                <option value="banking">🏦 Banking & Finance</option>
-                <option value="it">💻 IT & Technology</option>
-                <option value="telecom">📡 Telecom</option>
-                <option value="textile">🧵 Textile & Manufacturing</option>
-                <option value="education">📚 Education</option>
-                <option value="healthcare">🏥 Healthcare</option>
+            <span class="logo"><i class="fas fa-star"></i> CV Builder Pro</span>
+
+            <button class="btn btn-sm btn-accent-outline active" data-template="classic" onclick="setTemplate('classic')">
+                <i class="fas fa-pencil-alt"></i> Classic
+            </button>
+            <button class="btn btn-sm btn-accent-outline" data-template="modern" onclick="setTemplate('modern')">
+                <i class="fas fa-bold"></i> Modern
+            </button>
+            <button class="btn btn-sm btn-accent-outline" data-template="creative" onclick="setTemplate('creative')">
+                <i class="fas fa-paint-brush"></i> Creative
+            </button>
+
+            <select id="industryPreset" onchange="applyIndustryPreset(this.value)" class="industry-select">
+                <option value=""> Industry Preset (Pakistan)</option>
+                <option value="banking"> Banking & Finance</option>
+                <option value="it"> IT & Technology</option>
+                <option value="telecom"> Telecom</option>
+                <option value="textile"> Textile & Manufacturing</option>
+                <option value="education"> Education</option>
+                <option value="healthcare"> Healthcare</option>
             </select>
-            <span class="badge badge-credits" id="creditBadge" onclick="openPaymentModal()" title="Click to buy more credits">🪙 <span id="creditCount">1</span> Export Credit(s)</span>
-            <button class="btn btn-sm btn-primary" onclick="exportPDF()" title="Export as PDF">📥 Export PDF</button>
-            <button class="btn btn-sm btn-secondary" onclick="openCustomization()">🎨 Customize</button>
-            <button class="btn btn-sm btn-secondary" onclick="logout()">🚪 Logout</button>
+
+            <span class="badge badge-credits" id="creditBadge" onclick="openPaymentModal()">
+                <i class="fas fa-coins"></i> <span id="creditCount">1</span> Export Credit(s)
+            </span>
+
+            <button class="btn btn-sm btn-primary" onclick="exportPDF()">
+                <i class="fas fa-download"></i> Export PDF
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="openCustomization()">
+                <i class="fas fa-sliders-h"></i> Customize
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
 
-        <!-- Main Content -->
+        <!-- Split Content -->
         <div class="main-content">
             <!-- Left: Forms -->
-            <div class="form-panel" id="formPanel">
+            <aside class="form-panel" id="formPanel">
                 <div class="section-nav" id="sectionNav">
-                    <button class="active" data-section="personal">👤 Personal</button>
-                    <button data-section="education">🎓 Education</button>
-                    <button data-section="experience">💼 Experience</button>
-                    <button data-section="skills">⚡ Skills</button>
-                    <button data-section="languages">🌐 Languages</button>
-                    <button data-section="certifications">📜 Certs</button>
+                    <button class="active" data-section="personal"><i class="fas fa-user"></i> Personal</button>
+                    <button data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
+                    <button data-section="experience"><i class="fas fa-briefcase"></i> Experience</button>
+                    <button data-section="skills"><i class="fas fa-code"></i> Skills</button>
+                    <button data-section="languages"><i class="fas fa-language"></i> Languages</button>
+                    <button data-section="certifications"><i class="fas fa-certificate"></i> Certs</button>
+                    <button data-section="projects"><i class="fas fa-project-diagram"></i> Projects</button>
+                    <button data-section="awards"><i class="fas fa-award"></i> Awards</button>
+                    <button data-section="publications"><i class="fas fa-book"></i> Publications</button>
                 </div>
+
                 <div id="formSections">
-                    <!-- Personal Info -->
+                    <!-- Personal -->
                     <div class="form-section active" id="section-personal">
                         <h3>Personal Information</h3>
-                        <div class="photo-upload" style="margin-bottom:1rem;">
-                            <img class="photo-preview" id="photoPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Crect fill='%23ddd' width='70' height='70'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-size='24'%3E👤%3C/text%3E%3C/svg%3E" alt="Profile Photo">
+                        <div class="photo-upload">
+                            <img class="photo-preview" id="photoPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ccc'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='%23888' font-size='40'%3E%3C/text%3E%3C/svg%3E" alt="Profile">
                             <div>
-                                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photoInput').click()">📷 Upload Photo</button>
-                                <button class="btn btn-sm btn-danger" onclick="removePhoto()" style="margin-left:0.3rem;">✕</button>
+                                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photoInput').click()"><i class="fas fa-camera"></i> Upload</button>
+                                <button class="btn btn-sm btn-danger" onclick="removePhoto()"><i class="fas fa-trash"></i></button>
                                 <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
                             </div>
                         </div>
@@ -86,81 +115,102 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group"><label>Location</label><input type="text" id="location" placeholder="Lahore, Pakistan" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Website / LinkedIn</label><input type="text" id="website" placeholder="linkedin.com/in/ali" oninput="updatePreview()"></div>
+                            <div class="form-group"><label>LinkedIn / Website</label><input type="text" id="website" placeholder="linkedin.com/in/ali" oninput="updatePreview()"></div>
                         </div>
-                        <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="3" placeholder="A brief professional summary..." oninput="updatePreview()"></textarea></div>
+                        <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="3" placeholder="Brief professional summary..." oninput="updatePreview()"></textarea></div>
                     </div>
 
                     <!-- Education -->
                     <div class="form-section" id="section-education">
                         <h3>Education</h3>
                         <div id="educationEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addEducation()">+ Add Education</button>
+                        <button class="btn btn-sm btn-secondary" onclick="addEducation()"><i class="fas fa-plus"></i> Add Education</button>
                     </div>
 
                     <!-- Experience -->
                     <div class="form-section" id="section-experience">
                         <h3>Work Experience</h3>
                         <div id="experienceEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addExperience()">+ Add Experience</button>
+                        <button class="btn btn-sm btn-secondary" onclick="addExperience()"><i class="fas fa-plus"></i> Add Experience</button>
                     </div>
 
                     <!-- Skills -->
                     <div class="form-section" id="section-skills">
                         <h3>Skills</h3>
                         <div id="skillsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addSkill()">+ Add Skill</button>
+                        <button class="btn btn-sm btn-secondary" onclick="addSkill()"><i class="fas fa-plus"></i> Add Skill</button>
                     </div>
 
                     <!-- Languages -->
                     <div class="form-section" id="section-languages">
                         <h3>Languages</h3>
                         <div id="languagesEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addLanguage()">+ Add Language</button>
+                        <button class="btn btn-sm btn-secondary" onclick="addLanguage()"><i class="fas fa-plus"></i> Add Language</button>
                     </div>
 
                     <!-- Certifications -->
                     <div class="form-section" id="section-certifications">
                         <h3>Certifications</h3>
                         <div id="certificationsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addCertification()">+ Add Certification</button>
+                        <button class="btn btn-sm btn-secondary" onclick="addCertification()"><i class="fas fa-plus"></i> Add Certification</button>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="form-section" id="section-projects">
+                        <h3>Projects</h3>
+                        <div id="projectsEntries"></div>
+                        <button class="btn btn-sm btn-secondary" onclick="addProject()"><i class="fas fa-plus"></i> Add Project</button>
+                    </div>
+
+                    <!-- Awards -->
+                    <div class="form-section" id="section-awards">
+                        <h3>Awards & Honors</h3>
+                        <div id="awardsEntries"></div>
+                        <button class="btn btn-sm btn-secondary" onclick="addAward()"><i class="fas fa-plus"></i> Add Award</button>
+                    </div>
+
+                    <!-- Publications -->
+                    <div class="form-section" id="section-publications">
+                        <h3>Publications</h3>
+                        <div id="publicationsEntries"></div>
+                        <button class="btn btn-sm btn-secondary" onclick="addPublication()"><i class="fas fa-plus"></i> Add Publication</button>
                     </div>
                 </div>
-            </div>
+            </aside>
 
-            <!-- Right: Preview -->
-            <div class="preview-panel" id="previewPanel">
-                <div class="cv-page classic" id="cvPage">
+            <!-- Right: CV Preview -->
+            <main class="preview-panel" id="previewPanel">
+                <div class="cv-page" id="cvPage">
                     <div class="cv-inner" id="cvInner"></div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 
+    <!-- ============= MODALS ============= -->
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal">
         <div class="modal">
-            <h3>🪙 Buy Export Credits</h3>
-            <p>You have <strong id="modalCreditCount">0</strong> export credit(s) remaining. Simulate a payment to add more.</p>
+            <h3><i class="fas fa-coins"></i> Buy Export Credits</h3>
+            <p>Simulate a payment to add credits.</p>
             <div class="payment-option" onclick="simulatePayment('JazzCash')">
-                <div class="pay-icon">📱</div>
+                <div class="pay-icon"><i class="fas fa-mobile-alt"></i></div>
                 <div class="pay-info"><strong>JazzCash</strong><span>Instant mobile payment</span></div>
-                <span style="color:#fdcb6e;font-weight:700;">+3 Credits</span>
+                <span class="pay-credits">+3 Credits</span>
             </div>
             <div class="payment-option" onclick="simulatePayment('EasyPaisa')">
-                <div class="pay-icon">💳</div>
+                <div class="pay-icon"><i class="fas fa-wallet"></i></div>
                 <div class="pay-info"><strong>EasyPaisa</strong><span>Quick digital wallet</span></div>
-                <span style="color:#fdcb6e;font-weight:700;">+3 Credits</span>
+                <span class="pay-credits">+3 Credits</span>
             </div>
-            <button class="btn btn-sm btn-secondary" style="width:100%;margin-top:0.5rem;" onclick="closePaymentModal()">Cancel</button>
-            <p style="font-size:0.65rem;text-align:center;margin-top:0.7rem;color:var(--text-muted);">⚠️ This is a simulation. No real transactions occur.</p>
+            <button class="btn btn-sm btn-secondary" style="width:100%;" onclick="closePaymentModal()">Cancel</button>
         </div>
     </div>
 
     <!-- Customization Modal -->
     <div class="modal-overlay" id="customizationModal">
         <div class="modal">
-            <h3>🎨 Customize CV Appearance</h3>
+            <h3><i class="fas fa-sliders-h"></i> Customize CV</h3>
             <div class="form-group"><label>Accent Color</label><input type="color" id="accentColorPicker" value="#6c5ce7" oninput="applyCustomizations()"></div>
             <div class="form-group"><label>Font Style</label>
                 <select id="fontStylePicker" onchange="applyCustomizations()">
@@ -168,6 +218,14 @@
                     <option value="playfair">Playfair Display (Serif)</option>
                     <option value="poppins">Poppins (Modern)</option>
                     <option value="jetbrains">JetBrains Mono (Technical)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Font Size</label>
+                <select id="fontSizePicker" onchange="applyCustomizations()">
+                    <option value="14px">Small (14px)</option>
+                    <option value="16px" selected>Normal (16px)</option>
+                    <option value="18px">Large (18px)</option>
+                    <option value="20px">Extra Large (20px)</option>
                 </select>
             </div>
             <div class="form-group"><label>Border Radius</label>
