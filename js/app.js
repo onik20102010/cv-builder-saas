@@ -83,7 +83,7 @@ document.getElementById('authPassword').addEventListener('keydown', (e) => {
 });
 
 function logout() {
-    if (confirm('Logout? Your data is saved locally.')) {
+    if (confirm('Log out? Your data is saved locally.')) {
         saveToStorage();
         location.reload(); // simplest reset
     }
@@ -396,14 +396,144 @@ function setTemplate(name, silent = false) {
 // ==================== INDUSTRY PRESETS ====================
 function applyIndustryPreset(industry) {
     if (!industry) return;
-    const presets = {
-        banking: { accent: '#1a3c6e', summary: 'Dedicated financial professional with expertise in banking operations, risk management, and customer relationship management within Pakistan\'s leading financial institutions.' },
-        it: { accent: '#0d7377', summary: 'Innovative technology professional skilled in software development, cloud infrastructure, and digital transformation for Pakistan\'s growing IT sector.' },
-        telecom: { accent: '#2d8a4e', summary: 'Experienced telecommunications specialist with a passion for connectivity and network solutions in Pakistan\'s dynamic telecom industry.' },
-        textile: { accent: '#8b5e3c', summary: 'Skilled professional in textile manufacturing and supply chain management, contributing to Pakistan\'s premier textile export industry.' },
-        education: { accent: '#4a3f6b', summary: 'Passionate educator committed to academic excellence and student development within Pakistan\'s educational institutions.' },
-        healthcare: { accent: '#2e7d6f', summary: 'Compassionate healthcare professional dedicated to improving patient outcomes in Pakistan\'s medical facilities.' }
-    };
+const presets = {
+    // --- Banking & Finance ---
+    'banking': { accent: '#1a3c6e', summary: 'Dedicated financial professional with expertise in banking operations, risk management, and customer relationship management within Pakistan\'s leading financial institutions.' },
+    'banking_hbl': { accent: '#1a3c6e', summary: 'Results-driven banking professional seeking to contribute to Habib Bank Limited\'s legacy of trust and innovation in Pakistan\'s financial sector.' },
+    'banking_meezan': { accent: '#1a3c6e', summary: 'Shariah-compliant banking specialist aiming to advance Islamic finance at Meezan Bank, Pakistan\'s leading Islamic bank.' },
+    'banking_ubl': { accent: '#1a3c6e', summary: 'Motivated banking professional targeting United Bank Limited, with strong skills in corporate and retail banking operations.' },
+    'banking_alfalah': { accent: '#1a3c6e', summary: 'Finance professional seeking a role at Bank Alfalah, committed to excellence in customer service and digital banking solutions.' },
+    'banking_state_life': { accent: '#1a3c6e', summary: 'Insurance and financial services professional aiming to join State Life Insurance Corporation, with expertise in risk assessment and policy management.' },
+
+    // --- IT & Technology ---
+    'it': { accent: '#0d7377', summary: 'Innovative technology professional skilled in software development, cloud infrastructure, and digital transformation for Pakistan\'s growing IT sector.' },
+    'it_systems': { accent: '#0d7377', summary: 'Technology professional targeting Systems Limited, with expertise in enterprise software, IT consulting, and digital transformation solutions.' },
+    'it_arbisoft': { accent: '#0d7377', summary: 'Software engineer passionate about building world-class products, seeking to contribute to Arbisoft\'s global client portfolio.' },
+    'it_netsol': { accent: '#0d7377', summary: 'IT professional aiming for NetSol Technologies, specializing in fintech solutions, asset finance, and leasing software development.' },
+    'it_ibex': { accent: '#0d7377', summary: 'Customer experience and BPO professional seeking a role at Ibex Pakistan, with expertise in global client service delivery.' },
+
+    // --- Telecom ---
+    'telecom': { accent: '#2d8a4e', summary: 'Experienced telecommunications specialist with a passion for connectivity and network solutions in Pakistan\'s dynamic telecom industry.' },
+    'telecom_jazz': { accent: '#2d8a4e', summary: 'Telecom professional targeting Jazz, Pakistan\'s leading digital operator, with expertise in mobile network operations and digital services.' },
+    'telecom_telenor': { accent: '#2d8a4e', summary: 'Telecommunications specialist aiming for Telenor Pakistan, focused on network optimization and delivering seamless connectivity solutions.' },
+    'telecom_zong': { accent: '#2d8a4e', summary: 'Telecom professional seeking to join Zong 4G, with a strong background in 4G/LTE network deployment and customer acquisition strategies.' },
+    'telecom_ufone': { accent: '#2d8a4e', summary: 'Telecommunications expert targeting Ufone, committed to enhancing Pakistan\'s voice and data communication landscape.' },
+
+    // --- Textile & Carpet Manufacturing ---
+    'textile': { accent: '#8b5e3c', summary: 'Skilled professional in textile manufacturing and supply chain management, contributing to Pakistan\'s premier textile export industry.' },
+    'textile_gulahmed': { accent: '#8b5e3c', summary: 'Textile professional seeking to join Gul Ahmed Textile Mills, with expertise in fabric production, quality control, and export operations.' },
+    'textile_khaadi': { accent: '#8b5e3c', summary: 'Fashion and textile specialist targeting Khaadi Corporation, passionate about Pakistani design and global retail expansion.' },
+    'textile_nishat': { accent: '#8b5e3c', summary: 'Textile industry professional aiming for Nishat Mills, with experience in large-scale textile manufacturing and international trade.' },
+    'textile_interloop': { accent: '#8b5e3c', summary: 'Manufacturing professional seeking a role at Interloop Limited, specializing in hosiery production and sustainable textile practices.' },
+    'textile_nayyer': { accent: '#8b5e3c', summary: 'Carpet and textile artisan targeting Nayyer Carpets, with expertise in handcrafted designs and export-quality carpet manufacturing.' },
+    'textile_lahore_carpet': { accent: '#8b5e3c', summary: 'Textile craftsperson seeking to join Lahore Carpet Manufacturing Co., skilled in traditional and modern carpet weaving techniques.' },
+    'textile_ziyan': { accent: '#8b5e3c', summary: 'Textile professional targeting Ziyan Textiles, with expertise in fabric sourcing, production planning, and quality assurance.' },
+    'textile_kamal': { accent: '#8b5e3c', summary: 'Textile industry expert aiming for Kamal Limited, focused on spinning, weaving, and finished textile product manufacturing.' },
+    'textile_bokhara': { accent: '#8b5e3c', summary: 'Carpet and rug specialist seeking a position at Bokhara House, with deep knowledge of traditional Bokhara rug artistry.' },
+    'textile_ayesha': { accent: '#8b5e3c', summary: 'Textile manufacturing professional targeting Ayesha Woollen Mills, specializing in woollen and blended fabric production.' },
+    'textile_multan_carpet': { accent: '#8b5e3c', summary: 'Carpet industry professional seeking to join Multan Carpet Industries, with expertise in hand-knotted and machine-made carpet production.' },
+
+    // --- Construction & Engineering ---
+    'construction': { accent: '#4a3728', summary: 'Construction and engineering professional with expertise in infrastructure projects, site management, and quality assurance for Pakistan\'s growing construction sector.' },
+    'construction_zkb': { accent: '#4a3728', summary: 'Civil engineer targeting ZKB Engineers & Constructors, with experience in large-scale infrastructure and building projects across Pakistan.' },
+    'construction_fwo': { accent: '#4a3728', summary: 'Engineering professional seeking to serve at Frontier Works Organization (FWO), committed to national infrastructure development.' },
+    'construction_nespak': { accent: '#4a3728', summary: 'Consulting engineer aiming for NESPAK, with expertise in multidisciplinary engineering projects and international standards.' },
+    'construction_cw': { accent: '#4a3728', summary: 'Civil service professional targeting the Construction & Works (C&W) Department, dedicated to public infrastructure development.' },
+    'construction_nlc': { accent: '#4a3728', summary: 'Logistics and engineering professional seeking a role at National Logistics Cell (NLC), with expertise in large-scale construction and transport operations.' },
+    'construction_descon_eng': { accent: '#4a3728', summary: 'Engineer targeting Descon Engineering, with experience in industrial construction, plant maintenance, and EPC projects.' },
+    'construction_al_arab': { accent: '#4a3728', summary: 'Construction professional seeking to join Al-Arab Associates, skilled in commercial and residential project execution.' },
+    'construction_ramzan': { accent: '#4a3728', summary: 'Site engineer aiming for Muhammad Ramzan & Company, with hands-on experience in building construction and project management.' },
+    'construction_techno': { accent: '#4a3728', summary: 'Construction specialist targeting Techno Time Construction, focused on timely, quality-driven project delivery.' },
+    'construction_al_riaz': { accent: '#4a3728', summary: 'Construction professional seeking a position at Al-Riaz Construction Co., experienced in high-rise and commercial building projects.' },
+    'construction_wahab': { accent: '#4a3728', summary: 'Engineering professional targeting Wahab Engineering Services, with expertise in structural design and construction supervision.' },
+    'construction_ace': { accent: '#4a3728', summary: 'Contracting specialist aiming for Ace Contractors, skilled in project estimation, execution, and team leadership.' },
+    'construction_ammar': { accent: '#4a3728', summary: 'Construction professional seeking to join Ammar Group of Companies, with broad experience in diversified construction projects.' },
+    'construction_banu': { accent: '#4a3728', summary: 'Engineer targeting Banu Mukhtar Contracting, with expertise in industrial and infrastructure construction across Pakistan.' },
+    'construction_cecon': { accent: '#4a3728', summary: 'Engineering professional aiming for CECON Engineering, specialized in civil and structural engineering consultancy.' },
+    'construction_cneec': { accent: '#4a3728', summary: 'Engineer seeking to join China National Electric Engineering (CNEEC) in Pakistan, with expertise in power and infrastructure projects.' },
+    'construction_constructwell': { accent: '#4a3728', summary: 'Construction professional targeting ConstructWell, committed to quality building practices and innovative construction methods.' },
+    'construction_dascon': { accent: '#4a3728', summary: 'Site management professional aiming for Dascon Construction Company, experienced in large-scale project execution.' },
+    'construction_dcon': { accent: '#4a3728', summary: 'Construction specialist seeking a role at Dcon Construction, focused on efficient, cost-effective building solutions.' },
+    'construction_deokjae': { accent: '#4a3728', summary: 'Engineer targeting Deokjae Group Pakistan, with expertise in international-standard construction and project management.' },
+    'construction_earth': { accent: '#4a3728', summary: 'Construction professional seeking to join Earth Builders, passionate about sustainable and eco-friendly building practices.' },
+    'construction_imarat': { accent: '#4a3728', summary: 'Real estate and construction professional targeting Imarat Group, with expertise in property development and construction management.' },
+    'construction_prism': { accent: '#4a3728', summary: 'Estate and construction specialist aiming for Prism Estate & Builders, skilled in residential and commercial property development.' },
+    'construction_alwafa': { accent: '#4a3728', summary: 'Construction professional seeking a position at Al-Wafa Estate & Builders, experienced in real estate development and building projects.' },
+    'construction_shehanshah': { accent: '#4a3728', summary: 'Builder and developer targeting Shehanshah Estate and Builders, focused on quality residential and commercial construction.' },
+    'construction_amer_adnan': { accent: '#4a3728', summary: 'Architectural professional seeking to join Amer Adnan Associates, with expertise in modern architectural design and interior solutions.' },
+    'construction_design_tech': { accent: '#4a3728', summary: 'Engineering professional aiming for Design Tech Engineering Solutions, specialized in innovative design and structural engineering.' },
+
+    // --- Furniture, Woodwork & Interiors ---
+    'furniture': { accent: '#6b4c3b', summary: 'Skilled furniture and interior design professional with expertise in woodwork, space planning, and aesthetic interior solutions for Pakistan\'s growing home and office market.' },
+    'furniture_interwood': { accent: '#6b4c3b', summary: 'Furniture professional targeting Interwood Mobel, with expertise in premium furniture design, sales, and customer experience.' },
+    'furniture_falaknaz': { accent: '#6b4c3b', summary: 'Construction and furniture specialist seeking to join Falaknaz Group, skilled in real estate and interior furnishing solutions.' },
+    'furniture_trigen': { accent: '#6b4c3b', summary: 'Interior design professional aiming for TriGen Interiors, with a creative portfolio of modern residential and commercial spaces.' },
+    'furniture_themes': { accent: '#6b4c3b', summary: 'Furniture and homestore professional targeting Themes Furniture & Homestore, passionate about creating beautiful living environments.' },
+    'furniture_mahenti': { accent: '#6b4c3b', summary: 'Manufacturing professional seeking a role at Mahenti Industries, with expertise in furniture production and quality craftsmanship.' },
+    'furniture_focus': { accent: '#6b4c3b', summary: 'Interior specialist aiming for Focus Interiors, skilled in space transformation and contemporary design solutions.' },
+    'furniture_indoor': { accent: '#6b4c3b', summary: 'Furniture professional seeking to join In Door Furniture, with a passion for functional and stylish home furnishings.' },
+    'furniture_galaxy': { accent: '#6b4c3b', summary: 'Interior designer targeting Galaxy Interior Furniture, with expertise in modern furniture selection and space planning.' },
+    'furniture_habitt': { accent: '#6b4c3b', summary: 'Retail and furniture professional aiming for Habitt, skilled in home décor, furnishings, and customer engagement.' },
+    'furniture_chenone': { accent: '#6b4c3b', summary: 'Home and lifestyle professional seeking a position at ChenOne Home, with a keen eye for premium home styling and retail.' },
+    'furniture_aenzay': { accent: '#6b4c3b', summary: 'Architectural and interior professional targeting Aenzay Interiors & Architects, with expertise in bespoke design solutions.' },
+    'furniture_zebra': { accent: '#6b4c3b', summary: 'Interior and contracting professional seeking to join Zebra.pk Interior & Contractors, skilled in turnkey interior projects.' },
+    'furniture_ghonsla': { accent: '#6b4c3b', summary: 'Construction and design professional aiming for Ghonsla Construction, with expertise in building and interior finishing.' },
+    'furniture_alhaadi': { accent: '#6b4c3b', summary: 'Furniture craftsperson targeting Al Haadi Mobilya, skilled in traditional and contemporary furniture making.' },
+    'furniture_transeptia': { accent: '#6b4c3b', summary: 'Construction and interior professional seeking a role at Transeptia Construction Interior & Architect, with a holistic approach to design-build projects.' },
+
+    // --- Engineering & Industrial Manufacturing ---
+    'engineering': { accent: '#3d5a80', summary: 'Engineering and industrial manufacturing professional with expertise in production, quality management, and operational excellence for Pakistan\'s industrial sector.' },
+    'engineering_engro': { accent: '#3d5a80', summary: 'Industrial professional targeting Engro Corporation, with expertise in manufacturing, energy, and agribusiness operations.' },
+    'engineering_lucky': { accent: '#3d5a80', summary: 'Manufacturing specialist seeking to join Lucky Core Industries (LCI), skilled in chemical and materials production.' },
+    'engineering_fatima': { accent: '#3d5a80', summary: 'Industrial professional aiming for Fatima Group, with a strong background in fertilizer and energy sector operations.' },
+    'engineering_fauji': { accent: '#3d5a80', summary: 'Engineering professional targeting Fauji Fertilizer Company (FFC), committed to agricultural and industrial excellence.' },
+    'engineering_pel': { accent: '#3d5a80', summary: 'Electronics and appliances professional seeking a role at Pak Elektron Limited (PEL), skilled in manufacturing and product development.' },
+    'engineering_dawlance': { accent: '#3d5a80', summary: 'Home appliance specialist aiming for Dawlance, with expertise in consumer electronics and after-sales service.' },
+    'engineering_haier': { accent: '#3d5a80', summary: 'Consumer electronics professional targeting Haier Pakistan, focused on innovative home appliance solutions.' },
+    'engineering_atlas_battery': { accent: '#3d5a80', summary: 'Manufacturing professional seeking to join Atlas Battery, with expertise in automotive and industrial battery production.' },
+    'engineering_honda_atlas': { accent: '#3d5a80', summary: 'Automotive industry professional aiming for Honda Atlas Cars, with a passion for automobile manufacturing and quality engineering.' },
+    'engineering_indus_motor': { accent: '#3d5a80', summary: 'Automotive professional targeting Indus Motor Company (Toyota), skilled in lean manufacturing and supply chain management.' },
+    'engineering_pak_suzuki': { accent: '#3d5a80', summary: 'Automotive specialist seeking a position at Pak Suzuki Motor Company, with expertise in vehicle assembly and production.' },
+
+    // --- Consumer Goods, Retail & FMCG ---
+    'fmcg': { accent: '#e07c24', summary: 'FMCG and consumer goods professional with expertise in brand management, distribution, and retail operations for Pakistan\'s fast-moving consumer goods sector.' },
+    'fmcg_unilever': { accent: '#e07c24', summary: 'FMCG professional targeting Unilever Pakistan, with a strong background in brand management and consumer marketing.' },
+    'fmcg_pepsico': { accent: '#e07c24', summary: 'Beverage and snacks professional seeking to join PepsiCo Pakistan, skilled in sales, distribution, and brand activation.' },
+    'fmcg_coca_cola': { accent: '#e07c24', summary: 'Beverage industry professional aiming for Coca-Cola Beverages Pakistan, with expertise in bottling operations and market penetration.' },
+    'fmcg_nestle': { accent: '#e07c24', summary: 'Nutrition and food professional targeting Nestlé Pakistan, committed to quality and consumer well-being.' },
+    'fmcg_pg': { accent: '#e07c24', summary: 'Consumer goods professional seeking a role at P&G Pakistan, with expertise in brand building and market leadership.' },
+    'fmcg_reckitt': { accent: '#e07c24', summary: 'Health and hygiene professional aiming for Reckitt Benckiser (RB), focused on consumer health and household products.' },
+    'fmcg_shan': { accent: '#e07c24', summary: 'Food industry professional targeting Shan Foods, with a passion for Pakistani cuisine and global food distribution.' },
+    'fmcg_national_foods': { accent: '#e07c24', summary: 'Food manufacturing specialist seeking to join National Foods, skilled in food production and quality management.' },
+    'fmcg_metro': { accent: '#e07c24', summary: 'Retail professional targeting Metro Pakistan, with expertise in wholesale operations and supply chain management.' },
+    'fmcg_carrefour': { accent: '#e07c24', summary: 'Retail industry professional aiming for Carrefour Pakistan, skilled in hypermarket operations and category management.' },
+    'fmcg_imtiaz': { accent: '#e07c24', summary: 'Retail professional seeking a position at Imtiaz Super Market, with expertise in retail operations and customer service.' },
+    'fmcg_tcs': { accent: '#e07c24', summary: 'Logistics professional targeting TCS Express & Logistics, skilled in courier services, supply chain, and e-commerce fulfillment.' },
+
+    // --- Healthcare ---
+    'healthcare': { accent: '#2e7d6f', summary: 'Compassionate healthcare professional dedicated to improving patient outcomes in Pakistan\'s medical facilities.' },
+    'healthcare_shaukat': { accent: '#2e7d6f', summary: 'Healthcare professional seeking to serve at Shaukat Khanum Memorial Hospital, committed to providing world-class cancer care to all Pakistanis.' },
+    'healthcare_aku': { accent: '#2e7d6f', summary: 'Medical professional targeting Aga Khan University Hospital (AKUH), with a commitment to healthcare excellence and academic medicine.' },
+    'healthcare_indus_hospital': { accent: '#2e7d6f', summary: 'Healthcare professional aiming for Indus Hospital & Health Network, passionate about free, quality healthcare for underserved communities.' },
+
+    // --- Education ---
+    'education': { accent: '#4a3f6b', summary: 'Passionate educator committed to academic excellence and student development within Pakistan\'s educational institutions.' },
+    'education_lums': { accent: '#4a3f6b', summary: 'Academic professional targeting LUMS, with a strong commitment to research, teaching, and higher education excellence in Pakistan.' },
+    'education_beaconhouse': { accent: '#4a3f6b', summary: 'Educator seeking to join Beaconhouse School System, dedicated to shaping young minds through quality K-12 education.' },
+    'education_city_school': { accent: '#4a3f6b', summary: 'Teaching professional aiming for The City School, committed to modern pedagogy and holistic student development.' },
+
+    // --- NGOs & Social Sector ---
+    'ngo': { accent: '#5b8c5a', summary: 'Dedicated social sector professional committed to community development, humanitarian work, and creating positive social impact across Pakistan.' },
+    'ngo_saylani': { accent: '#5b8c5a', summary: 'Social welfare professional seeking to serve at Saylani Welfare Trust, committed to poverty alleviation and community empowerment.' },
+    'ngo_tcf': { accent: '#5b8c5a', summary: 'Education and development professional targeting The Citizens Foundation (TCF), dedicated to providing quality education to underprivileged children.' },
+
+    // --- Miscellaneous ---
+    'misc': { accent: '#6c5ce7', summary: 'Versatile professional seeking opportunities in Pakistan\'s diverse business landscape.' },
+    'misc_murree': { accent: '#6c5ce7', summary: 'Beverage industry professional targeting Murree Brewery Company, with expertise in production, quality control, and Pakistan\'s heritage brands.' },
+    'misc_pc': { accent: '#6c5ce7', summary: 'Hospitality professional seeking to join Pearl Continental (PC) Hotels, committed to world-class guest service and hotel management.' },
+    'misc_serena': { accent: '#6c5ce7', summary: 'Hotel and tourism professional aiming for Serena Hotels Pakistan, with expertise in luxury hospitality and cultural tourism.' },
+    'misc_airblue': { accent: '#6c5ce7', summary: 'Aviation professional targeting Airblue, with a passion for safe, reliable air travel and customer service in Pakistan\'s airline industry.' }
+};
     const preset = presets[industry];
     if (preset) {
         userData.settings.accentColor = preset.accent;

@@ -53,14 +53,157 @@
             </button>
 
             <select id="industryPreset" onchange="applyIndustryPreset(this.value)" class="industry-select">
-                <option value=""> Industry Preset (Pakistan)</option>
-                <option value="banking"> Banking & Finance</option>
-                <option value="it"> IT & Technology</option>
-                <option value="telecom"> Telecom</option>
-                <option value="textile"> Textile & Manufacturing</option>
-                <option value="education"> Education</option>
-                <option value="healthcare"> Healthcare</option>
-            </select>
+    <option value="">🏭 Industry Preset (Pakistan)</option>
+    
+    <optgroup label="🏦 Banking & Finance">
+        <option value="banking">Banking & Finance (General)</option>
+        <option value="banking_hbl">Habib Bank Limited (HBL)</option>
+        <option value="banking_meezan">Meezan Bank</option>
+        <option value="banking_ubl">United Bank Limited (UBL)</option>
+        <option value="banking_alfalah">Bank Alfalah</option>
+        <option value="banking_state_life">State Life Insurance Corporation</option>
+    </optgroup>
+
+    <optgroup label="💻 IT & Technology">
+        <option value="it">IT & Technology (General)</option>
+        <option value="it_systems">Systems Limited</option>
+        <option value="it_arbisoft">Arbisoft</option>
+        <option value="it_netsol">NetSol Technologies</option>
+        <option value="it_ibex">Ibex Pakistan</option>
+    </optgroup>
+
+    <optgroup label="📡 Telecom">
+        <option value="telecom">Telecom (General)</option>
+        <option value="telecom_jazz">Jazz</option>
+        <option value="telecom_telenor">Telenor Pakistan</option>
+        <option value="telecom_zong">Zong 4G</option>
+        <option value="telecom_ufone">Ufone</option>
+    </optgroup>
+
+    <optgroup label="🧵 Textile & Carpet Manufacturing">
+        <option value="textile">Textile & Manufacturing (General)</option>
+        <option value="textile_gulahmed">Gul Ahmed Textile Mills</option>
+        <option value="textile_khaadi">Khaadi Corporation</option>
+        <option value="textile_nishat">Nishat Mills</option>
+        <option value="textile_interloop">Interloop Limited</option>
+        <option value="textile_nayyer">Nayyer Carpets</option>
+        <option value="textile_lahore_carpet">Lahore Carpet Manufacturing Co.</option>
+        <option value="textile_ziyan">Ziyan Textiles</option>
+        <option value="textile_kamal">Kamal Limited</option>
+        <option value="textile_bokhara">Bokhara House</option>
+        <option value="textile_ayesha">Ayesha Woollen Mills</option>
+        <option value="textile_multan_carpet">Multan Carpet Industries</option>
+    </optgroup>
+
+    <optgroup label="🏗️ Construction & Engineering">
+        <option value="construction">Construction & Engineering (General)</option>
+        <option value="construction_zkb">ZKB Engineers & Constructors</option>
+        <option value="construction_fwo">Frontier Works Organization (FWO)</option>
+        <option value="construction_nespak">NESPAK</option>
+        <option value="construction_cw">Construction & Works (C&W) Department</option>
+        <option value="construction_nlc">National Logistics Cell (NLC)</option>
+        <option value="construction_descon_eng">Descon Engineering</option>
+        <option value="construction_al_arab">Al-Arab Associates</option>
+        <option value="construction_ramzan">Muhammad Ramzan & Company</option>
+        <option value="construction_techno">Techno Time Construction</option>
+        <option value="construction_al_riaz">Al-Riaz Construction Co.</option>
+        <option value="construction_wahab">Wahab Engineering Services</option>
+        <option value="construction_ace">Ace Contractors</option>
+        <option value="construction_ammar">Ammar Group of Companies</option>
+        <option value="construction_banu">Banu Mukhtar Contracting</option>
+        <option value="construction_cecon">CECON Engineering</option>
+        <option value="construction_cneec">China National Electric Engineering (CNEEC)</option>
+        <option value="construction_constructwell">ConstructWell</option>
+        <option value="construction_dascon">Dascon Construction Company</option>
+        <option value="construction_dcon">Dcon Construction</option>
+        <option value="construction_deokjae">Deokjae Group Pakistan</option>
+        <option value="construction_earth">Earth Builders</option>
+        <option value="construction_imarat">Imarat Group</option>
+        <option value="construction_prism">Prism Estate & Builders</option>
+        <option value="construction_alwafa">Al-Wafa Estate & Builders</option>
+        <option value="construction_shehanshah">Shehanshah Estate and Builders</option>
+        <option value="construction_amer_adnan">Amer Adnan Associates</option>
+        <option value="construction_design_tech">Design Tech Engineering Solutions</option>
+    </optgroup>
+
+    <optgroup label="🪑 Furniture, Woodwork & Interiors">
+        <option value="furniture">Furniture & Woodwork (General)</option>
+        <option value="furniture_interwood">Interwood Mobel</option>
+        <option value="furniture_falaknaz">Falaknaz Group</option>
+        <option value="furniture_trigen">TriGen Interiors</option>
+        <option value="furniture_themes">Themes Furniture & Homestore</option>
+        <option value="furniture_mahenti">Mahenti Industries</option>
+        <option value="furniture_focus">Focus Interiors</option>
+        <option value="furniture_indoor">In Door Furniture</option>
+        <option value="furniture_galaxy">Galaxy Interior Furniture</option>
+        <option value="furniture_habitt">Habitt</option>
+        <option value="furniture_chenone">ChenOne Home</option>
+        <option value="furniture_aenzay">Aenzay Interiors & Architects</option>
+        <option value="furniture_zebra">Zebra.pk Interior & Contractors</option>
+        <option value="furniture_ghonsla">Ghonsla Construction</option>
+        <option value="furniture_alhaadi">Al Haadi Mobilya</option>
+        <option value="furniture_transeptia">Transeptia Construction Interior & Architect</option>
+    </optgroup>
+
+    <optgroup label="⚙️ Engineering & Industrial Manufacturing">
+        <option value="engineering">Engineering & Industrial (General)</option>
+        <option value="engineering_engro">Engro Corporation</option>
+        <option value="engineering_lucky">Lucky Core Industries (LCI)</option>
+        <option value="engineering_fatima">Fatima Group</option>
+        <option value="engineering_fauji">Fauji Fertilizer Company (FFC)</option>
+        <option value="engineering_pel">Pak Elektron Limited (PEL)</option>
+        <option value="engineering_dawlance">Dawlance</option>
+        <option value="engineering_haier">Haier Pakistan</option>
+        <option value="engineering_atlas_battery">Atlas Battery</option>
+        <option value="engineering_honda_atlas">Honda Atlas Cars</option>
+        <option value="engineering_indus_motor">Indus Motor Company (Toyota)</option>
+        <option value="engineering_pak_suzuki">Pak Suzuki Motor Company</option>
+    </optgroup>
+
+    <optgroup label="🛒 Consumer Goods, Retail & FMCG">
+        <option value="fmcg">Consumer Goods & FMCG (General)</option>
+        <option value="fmcg_unilever">Unilever Pakistan</option>
+        <option value="fmcg_pepsico">PepsiCo Pakistan</option>
+        <option value="fmcg_coca_cola">Coca-Cola Beverages Pakistan</option>
+        <option value="fmcg_nestle">Nestlé Pakistan</option>
+        <option value="fmcg_pg">P&G Pakistan</option>
+        <option value="fmcg_reckitt">Reckitt Benckiser (RB)</option>
+        <option value="fmcg_shan">Shan Foods</option>
+        <option value="fmcg_national_foods">National Foods</option>
+        <option value="fmcg_metro">Metro Pakistan</option>
+        <option value="fmcg_carrefour">Carrefour Pakistan</option>
+        <option value="fmcg_imtiaz">Imtiaz Super Market</option>
+        <option value="fmcg_tcs">TCS Express & Logistics</option>
+    </optgroup>
+
+    <optgroup label="🏥 Healthcare">
+        <option value="healthcare">Healthcare (General)</option>
+        <option value="healthcare_shaukat">Shaukat Khanum Memorial Hospital</option>
+        <option value="healthcare_aku">Aga Khan University Hospital (AKUH)</option>
+        <option value="healthcare_indus_hospital">Indus Hospital & Health Network</option>
+    </optgroup>
+
+    <optgroup label="📚 Education">
+        <option value="education">Education (General)</option>
+        <option value="education_lums">LUMS</option>
+        <option value="education_beaconhouse">Beaconhouse School System</option>
+        <option value="education_city_school">The City School</option>
+    </optgroup>
+
+    <optgroup label="🤝 NGOs & Social Sector">
+        <option value="ngo">NGOs & Social Sector (General)</option>
+        <option value="ngo_saylani">Saylani Welfare Trust</option>
+        <option value="ngo_tcf">The Citizens Foundation (TCF)</option>
+    </optgroup>
+
+    <optgroup label="🎯 Miscellaneous & Other Sectors">
+        <option value="misc">Miscellaneous (General)</option>
+        <option value="misc_murree">Murree Brewery Company</option>
+        <option value="misc_pc">Pearl Continental (PC) Hotels</option>
+        <option value="misc_serena">Serena Hotels Pakistan</option>
+        <option value="misc_airblue">Airblue</option>
+    </optgroup>
+</select>
 
             <span class="badge badge-credits" id="creditBadge" onclick="openPaymentModal()">
                 <i class="fas fa-coins"></i> <span id="creditCount">1</span> Export Credit(s)
