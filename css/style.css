@@ -33,6 +33,16 @@ Theme: Pakistani Professional (Dark UI + A4 Print)
   
   /* Default CV Variable (Overwritten by JS) */
   --cv-accent: #6c5ce7;
+  
+  /* Add these for the searchable dropdown compatibility */
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --bg-card-solid: rgba(22, 22, 38, 0.95);
+  --accent-2: #a29bfe;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --blur-glass: blur(20px) saturate(130%);
+  --radius-md: 14px;
+  --accent: var(--accent-main);  /* alias so dropdown references work */
 }
 
 /* ==================== GLOBAL ==================== */
@@ -842,4 +852,350 @@ label {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+}
+
+/* ================= SEARCHABLE INDUSTRY SELECT ================= */
+.searchable-select {
+  position: relative;
+  width: 260px;            /* adjust to match top bar spacing */
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  z-index: 50;
+}
+
+.search-input-wrap {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-medium);
+  border-radius: 20px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.search-input-wrap:hover { border-color: var(--border-glow); }
+.search-input-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,92,231,0.15);
+}
+
+.search-icon {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  margin-right: 0.3rem;
+  flex-shrink: 0;
+}
+
+.search-input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-family: inherit;
+  padding: 0.15rem 0;
+}
+.search-input-wrap input::placeholder {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.toggle-arrow {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  margin-left: 0.3rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.toggle-arrow.open { transform: rotate(180deg); }
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+  backdrop-filter: var(--blur-glass);
+  box-shadow: var(--shadow-lg);
+}
+.search-dropdown.show { display: block; }
+
+.search-dropdown .optgroup-label {
+  padding: 0.5rem 0.8rem 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.02);
+}
+.search-dropdown .option-item {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.12s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-dropdown .option-item:hover,
+.search-dropdown .option-item.active {
+  background: rgba(108,92,231,0.15);
+}
+.search-dropdown .option-item mark {
+  background: rgba(253,203,110,0.35);
+  color: #fdcb6e;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Scrollbar for dropdown */
+.search-dropdown::-webkit-scrollbar { width: 4px; }
+.search-dropdown::-webkit-scrollbar-track { background: transparent; }
+.search-dropdown::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+
+/* Selected item highlight */
+.searchable-select .selected-highlight {
+  background: rgba(108,92,231,0.2);
+  font-weight: 600;
+}
+
+/* ── NEW TEMPLATES ── */
+/* ATS Classic (ultra‑safe for parsers) */
+.cv-page.ats-classic .cv-sidebar {
+  width: 28%;
+  background: #f0f2f5;
+  border-right: 2px solid #d0d5dd;
+}
+.cv-page.ats-classic .cv-main {
+  width: 72%;
+  padding: 2.5em;
+}
+.cv-page.ats-classic .cv-photo { border-radius: 2px; }
+.cv-page.ats-classic .cv-section-heading::after { height: 3px; }
+.cv-page.ats-classic .cv-name { font-size: 2em; }
+
+/* Executive (bold top header, no sidebar) */
+.cv-page.executive .cv-inner {
+  flex-direction: column;
+}
+.cv-page.executive .cv-sidebar {
+  width: 100%;
+  padding: 1.5em 2.5em;
+  background: #1a1a1a;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5em;
+  align-items: center;
+}
+.cv-page.executive .cv-sidebar .cv-photo-section {
+  text-align: left;
+  flex: 1;
+}
+.cv-page.executive .cv-contact-details {
+  flex: 2;
+  flex-direction: row;
+  gap: 2em;
+}
+.cv-page.executive .cv-sidebar-section {
+  display: none;
+}
+.cv-page.executive .cv-main {
+  width: 100%;
+  padding: 2em 2.5em;
+}
+.cv-page.executive .cv-section-heading {
+  border-bottom: 2px solid #000;
+  font-size: 1.6em;
+}
+
+/* Minimalist (no sidebar, clean single column) */
+.cv-page.minimal .cv-inner {
+  flex-direction: column;
+}
+.cv-page.minimal .cv-sidebar {
+  display: none;
+}
+.cv-page.minimal .cv-main {
+  width: 100%;
+  padding: 2.5em 3em;
+}
+.cv-page.minimal .cv-name {
+  font-size: 2.5em;
+  text-align: center;
+  border-bottom: 2px solid var(--cv-accent);
+  padding-bottom: 0.5em;
+  margin-bottom: 1em;
+}
+.cv-page.minimal .cv-title-role {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 2em;
+}
+.cv-page.minimal .cv-contact-details {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  margin-bottom: 2em;
+}
+.cv-page.minimal .cv-section-heading {
+  font-size: 1.6em;
+  border-bottom: none;
+  text-transform: uppercase;
+}
+.cv-page.minimal .cv-section-heading::after {
+  display: none;
+}
+
+/* Tech (monospace accents) */
+.cv-page.tech .cv-sidebar {
+  background: #0d1117;
+  color: #c9d1d9;
+}
+.cv-page.tech .cv-main {
+  background: #f6f8fa;
+}
+.cv-page.tech .cv-section-heading {
+  font-family: 'JetBrains Mono', monospace;
+  border-bottom: 2px dashed var(--cv-accent);
+}
+.cv-page.tech .cv-skill-fill {
+  border-radius: 0;
+}
+
+/* Academic (serif fonts, traditional look) */
+.cv-page.academic .cv-sidebar {
+  width: 32%;
+  background: #faf9f6;
+  border-right: 3px solid var(--cv-accent);
+}
+.cv-page.academic .cv-main {
+  width: 68%;
+  font-family: 'Playfair Display', serif;
+}
+.cv-page.academic .cv-section-heading {
+  font-family: 'Playfair Display', serif;
+  border-bottom: 1px solid #333;
+}
+.cv-page.academic .cv-name {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Infographic (visual bars, big icons) – we will use extra classes in JS to render differently */
+/* We'll handle this template via dynamic JS, just CSS classes for now */
+.cv-page.infographic .cv-inner {
+  flex-direction: column;
+}
+.cv-page.infographic .cv-sidebar {
+  width: 100%;
+  padding: 1em;
+  background: var(--cv-accent);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cv-page.infographic .cv-photo { width: 60px; height: 60px; margin: 0; }
+.cv-page.infographic .cv-sidebar-section { display: none; }
+.cv-page.infographic .cv-main {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.cv-page.infographic .cv-section {
+  width: 45%;
+  margin-bottom: 1.5em;
+}
+.cv-page.infographic .cv-section-heading {
+  font-size: 1.3em;
+  border: none;
+  margin-bottom: 0.5em;
+}
+.cv-page.infographic .cv-section-heading::after { display: none; }
+
+/* Creative 2 (reverse layout) */
+.cv-page.creative2 .cv-inner {
+  flex-direction: row-reverse;
+}
+.cv-page.creative2 .cv-sidebar {
+  width: 30%;
+  background: #fef9ef;
+}
+.cv-page.creative2 .cv-main {
+  width: 70%;
+  padding: 3em;
+}
+.cv-page.creative2 .cv-section-heading {
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+/* ========== ENHANCED UI/UX ========== */
+/* Softer top bar */
+.top-bar {
+  padding: 0.5rem 1rem;
+  gap: 0.75rem;
+}
+
+/* Template switcher container */
+.template-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Subtle card hover lift on dynamic entries */
+.dynamic-entry {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.dynamic-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+/* Rounded inputs & selects */
+input, textarea, select {
+  border-radius: 10px;
+}
+
+/* Section nav polished */
+.section-nav button {
+  transition: all 0.15s ease;
+}
+.section-nav button:hover {
+  background: var(--glass-hover);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Button active scale */
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* Smooth fade on modal */
+.modal-overlay {
+  transition: opacity 0.25s ease;
+}
+
+/* Preview panel subtle grid background */
+.preview-panel {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.015) 10px,
+    rgba(255,255,255,0.015) 20px
+  );
 }

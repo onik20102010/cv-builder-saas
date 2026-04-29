@@ -195,6 +195,89 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
+// Cover Letter exporter (uses a hidden iframe or direct print style)
+function updateCoverLetter() {
+  // Store values in userData (optional, for persistence)
+  userData.coverLetter = {
+    date: document.getElementById('clDate').value,
+    manager: document.getElementById('clManager').value,
+    company: document.getElementById('clCompany').value,
+    position: document.getElementById('clPosition').value,
+    // ... etc
+  };
+  saveToStorage();
+}
+
+function matchJobDescription() {
+  const jd = document.getElementById('jdText').value.trim().toLowerCase();
+  if (!jd) return showToast('Paste a job description first.', 'error');
+  
+  // Extract all text from current CV
+  const cvText = document.getElementById('cvInner').innerText.toLowerCase();
+  
+  // Simple keyword frequency analysis
+  const jdWords = jd.match(/\b\w{4,}\b/g) || [];
+  const commonSkills = ['javascript','python','react','node','sql','project management','leadership','communication','agile','marketing','sales','finance','accounting','human resource','data analysis','machine learning'];
+  
+  let found = [];
+  let missing = [];
+  
+  commonSkills.forEach(skill => {
+    if (jd.includes(skill)) {
+      if (cvText.includes(skill)) found.push(skill);
+      else missing.push(skill);
+    }
+  });
+  
+  const matchPercent = Math.round((found.length / (found.length + missing.length || 1)) * 100);
+  
+  let resultHTML = `<p><strong>Match Score:</strong> ${matchPercent}%</p>`;
+  if (found.length) resultHTML += `<p><span style="color:#00cec9">✓ Found keywords:</span> ${found.join(', ')}</p>`;
+  if (missing.length) resultHTML += `<p><span style="color:#e17055">⚠ Missing keywords (add to your CV):</span> ${missing.join(', ')}</p>`;
+  
+  document.getElementById('matchResult').innerHTML = resultHTML;
+  showToast(`CV matches ${matchPercent}% of job keywords.`, 'info');
+}
+
+function exportCoverLetter() {
+  // Build cover letter HTML
+  const name = userData.personalInfo.fullName || 'Your Name';
+  const email = userData.personalInfo.email || '';
+  const phone = userData.personalInfo.phone || '';
+  const address = document.getElementById('clAddress').value || userData.personalInfo.location || '';
+  const company = document.getElementById('clCompany').value;
+  const position = document.getElementById('clPosition').value;
+  const date = document.getElementById('clDate').value || new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  
+  const salutation = document.getElementById('clSalutation').value;
+  const opening = document.getElementById('clOpening').value.replace('{company}', company).replace('{position}', position);
+  const body1 = document.getElementById('clBody1').value;
+  const body2 = document.getElementById('clBody2').value;
+  const closing = document.getElementById('clClosing').value;
+
+  const clHTML = `
+    <div style="font-family: 'Inter', sans-serif; max-width: 700px; margin: 40px auto; padding: 40px; border: 1px solid #ccc;">
+      <p style="text-align:right; color:#555">${date}</p>
+      <p><strong>${name}</strong><br>${email ? email+'<br>' : ''}${phone ? phone+'<br>' : ''}${address}</p>
+      <p>To:<br>${company ? company+'<br>' : ''}${position ? position+'<br>' : ''}</p>
+      <p>${salutation}</p>
+      <p>${opening}</p>
+      <p>${body1}</p>
+      <p>${body2}</p>
+      <p>${closing}</p>
+      <p>Sincerely,<br>${name}</p>
+    </div>
+  `;
+  
+  const win = window.open('', '_blank', 'width=800,height=600');
+  win.document.write('<html><head><title>Cover Letter</title></head><body>');
+  win.document.write(clHTML);
+  win.document.write('</body></html>');
+  win.document.close();
+  win.print();
+  showToast('Cover letter ready for print.', 'success');
+}
+
 // --- Entry HTML creators ---
 function createEducationHTML(entry) {
     return `<div class="form-row">
@@ -383,14 +466,16 @@ function updatePreview() {
 function setTemplate(name, silent = false) {
     userData.settings.template = name;
     const cvPage = document.getElementById('cvPage');
-    cvPage.classList.remove('classic', 'modern', 'creative');
+    const validTemplates = ['classic','modern','creative','ats-classic','executive','minimal','tech','academic','infographic','creative2'];
+    // Remove all template classes
+    validTemplates.forEach(t => cvPage.classList.remove(t));
     cvPage.classList.add(name);
     document.querySelectorAll('[data-template]').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.querySelector(`[data-template="${name}"]`);
     if (activeBtn) activeBtn.classList.add('active');
-    updatePreview();
+    updatePreview(); // re-render completely to apply structural changes
     saveToStorage();
-    if (!silent) showToast(`Template set to ${name.charAt(0).toUpperCase() + name.slice(1)}`, 'success');
+    if (!silent) showToast(`Template: ${name.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase())}`, 'success');
 }
 
 // ==================== INDUSTRY PRESETS ====================
@@ -582,23 +667,50 @@ function simulatePayment(method) {
 }
 
 // ==================== EXPORT PDF ====================
+// At start: userData.credits should default to 5
+// In loadFromStorage, change the fallback: credits: parsed.credits ?? 5
+
+// Update exportPDF
 function exportPDF() {
     if (userData.credits <= 0) {
-        showToast('No credits left! Buy more to export.', 'error');
-        openPaymentModal();
+        // Friendly upgrade dialog instead of full block
+        if (confirm('You have 0 free exports left.\nWould you like to buy an affordable credit pack?\n(You can also continue, but the PDF will have a small watermark.)')) {
+            openPaymentModal();
+        } else {
+            // Allow export with watermark (we can add a gentle overlay via JS before print)
+            updatePreview(); // ensure latest data
+            setTimeout(() => {
+                addWatermark(); // simple function that adds a transparent watermark to cvPage
+                window.print();
+                removeWatermark();
+                showToast('Watermarked PDF exported. Consider upgrading for watermark-free.', 'warning');
+            }, 300);
+        }
         return;
     }
-    if (!confirm(`Export uses 1 credit. Continue?`)) return;
+    // Normal export
+    if (!confirm('This will use 1 of your ' + userData.credits + ' free exports. Continue?')) return;
     userData.credits--;
     updateCreditDisplay();
     saveToStorage();
     updatePreview();
     setTimeout(() => {
         window.print();
-        showToast('Print dialog opened. Choose "Save as PDF".', 'success');
+        showToast('PDF ready! Use "Save as PDF" in print dialog.', 'success');
     }, 300);
 }
 
+function addWatermark() {
+    const wm = document.createElement('div');
+    wm.id = 'watermark';
+    wm.style.cssText = 'position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-25deg); font-size:8em; color:rgba(0,0,0,0.04); pointer-events:none; white-space:nowrap;';
+    wm.textContent = 'Free CV Builder';
+    document.getElementById('cvPage').appendChild(wm);
+}
+function removeWatermark() {
+    const wm = document.getElementById('watermark');
+    if (wm) wm.remove();
+}
 // ==================== TOAST ====================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
@@ -623,3 +735,309 @@ document.addEventListener('keydown', function(e) {
 
 // ==================== READY ====================
 console.log('CV Builder Pro ready');
+
+// ==================== SEARCHABLE INDUSTRY DROPDOWN ====================
+(function() {
+  // Original options data – extracted from the old select (copy-pasted)
+  const industryGroups = [
+    { label: '🏦 Banking & Finance', options: [
+      { value: 'banking', text: 'Banking & Finance (General)' },
+      { value: 'banking_hbl', text: 'Habib Bank Limited (HBL)' },
+      { value: 'banking_meezan', text: 'Meezan Bank' },
+      { value: 'banking_ubl', text: 'United Bank Limited (UBL)' },
+      { value: 'banking_alfalah', text: 'Bank Alfalah' },
+      { value: 'banking_state_life', text: 'State Life Insurance Corporation' }
+    ]},
+    { label: '💻 IT & Technology', options: [
+      { value: 'it', text: 'IT & Technology (General)' },
+      { value: 'it_systems', text: 'Systems Limited' },
+      { value: 'it_arbisoft', text: 'Arbisoft' },
+      { value: 'it_netsol', text: 'NetSol Technologies' },
+      { value: 'it_ibex', text: 'Ibex Pakistan' }
+    ]},
+    { label: '📡 Telecom', options: [
+      { value: 'telecom', text: 'Telecom (General)' },
+      { value: 'telecom_jazz', text: 'Jazz' },
+      { value: 'telecom_telenor', text: 'Telenor Pakistan' },
+      { value: 'telecom_zong', text: 'Zong 4G' },
+      { value: 'telecom_ufone', text: 'Ufone' }
+    ]},
+    { label: '🧵 Textile & Carpet Manufacturing', options: [
+      { value: 'textile', text: 'Textile & Manufacturing (General)' },
+      { value: 'textile_gulahmed', text: 'Gul Ahmed Textile Mills' },
+      { value: 'textile_khaadi', text: 'Khaadi Corporation' },
+      { value: 'textile_nishat', text: 'Nishat Mills' },
+      { value: 'textile_interloop', text: 'Interloop Limited' },
+      { value: 'textile_nayyer', text: 'Nayyer Carpets' },
+      { value: 'textile_lahore_carpet', text: 'Lahore Carpet Manufacturing Co.' },
+      { value: 'textile_ziyan', text: 'Ziyan Textiles' },
+      { value: 'textile_kamal', text: 'Kamal Limited' },
+      { value: 'textile_bokhara', text: 'Bokhara House' },
+      { value: 'textile_ayesha', text: 'Ayesha Woollen Mills' },
+      { value: 'textile_multan_carpet', text: 'Multan Carpet Industries' }
+    ]},
+    { label: '🏗️ Construction & Engineering', options: [
+      { value: 'construction', text: 'Construction & Engineering (General)' },
+      { value: 'construction_zkb', text: 'ZKB Engineers & Constructors' },
+      { value: 'construction_fwo', text: 'Frontier Works Organization (FWO)' },
+      { value: 'construction_nespak', text: 'NESPAK' },
+      { value: 'construction_cw', text: 'Construction & Works (C&W) Department' },
+      { value: 'construction_nlc', text: 'National Logistics Cell (NLC)' },
+      { value: 'construction_descon_eng', text: 'Descon Engineering' },
+      { value: 'construction_al_arab', text: 'Al-Arab Associates' },
+      { value: 'construction_ramzan', text: 'Muhammad Ramzan & Company' },
+      { value: 'construction_techno', text: 'Techno Time Construction' },
+      { value: 'construction_al_riaz', text: 'Al-Riaz Construction Co.' },
+      { value: 'construction_wahab', text: 'Wahab Engineering Services' },
+      { value: 'construction_ace', text: 'Ace Contractors' },
+      { value: 'construction_ammar', text: 'Ammar Group of Companies' },
+      { value: 'construction_banu', text: 'Banu Mukhtar Contracting' },
+      { value: 'construction_cecon', text: 'CECON Engineering' },
+      { value: 'construction_cneec', text: 'China National Electric Engineering (CNEEC)' },
+      { value: 'construction_constructwell', text: 'ConstructWell' },
+      { value: 'construction_dascon', text: 'Dascon Construction Company' },
+      { value: 'construction_dcon', text: 'Dcon Construction' },
+      { value: 'construction_deokjae', text: 'Deokjae Group Pakistan' },
+      { value: 'construction_earth', text: 'Earth Builders' },
+      { value: 'construction_imarat', text: 'Imarat Group' },
+      { value: 'construction_prism', text: 'Prism Estate & Builders' },
+      { value: 'construction_alwafa', text: 'Al-Wafa Estate & Builders' },
+      { value: 'construction_shehanshah', text: 'Shehanshah Estate and Builders' },
+      { value: 'construction_amer_adnan', text: 'Amer Adnan Associates' },
+      { value: 'construction_design_tech', text: 'Design Tech Engineering Solutions' }
+    ]},
+    { label: '🪑 Furniture, Woodwork & Interiors', options: [
+      { value: 'furniture', text: 'Furniture & Woodwork (General)' },
+      { value: 'furniture_interwood', text: 'Interwood Mobel' },
+      { value: 'furniture_falaknaz', text: 'Falaknaz Group' },
+      { value: 'furniture_trigen', text: 'TriGen Interiors' },
+      { value: 'furniture_themes', text: 'Themes Furniture & Homestore' },
+      { value: 'furniture_mahenti', text: 'Mahenti Industries' },
+      { value: 'furniture_focus', text: 'Focus Interiors' },
+      { value: 'furniture_indoor', text: 'In Door Furniture' },
+      { value: 'furniture_galaxy', text: 'Galaxy Interior Furniture' },
+      { value: 'furniture_habitt', text: 'Habitt' },
+      { value: 'furniture_chenone', text: 'ChenOne Home' },
+      { value: 'furniture_aenzay', text: 'Aenzay Interiors & Architects' },
+      { value: 'furniture_zebra', text: 'Zebra.pk Interior & Contractors' },
+      { value: 'furniture_ghonsla', text: 'Ghonsla Construction' },
+      { value: 'furniture_alhaadi', text: 'Al Haadi Mobilya' },
+      { value: 'furniture_transeptia', text: 'Transeptia Construction Interior & Architect' }
+    ]},
+    { label: '⚙️ Engineering & Industrial Manufacturing', options: [
+      { value: 'engineering', text: 'Engineering & Industrial (General)' },
+      { value: 'engineering_engro', text: 'Engro Corporation' },
+      { value: 'engineering_lucky', text: 'Lucky Core Industries (LCI)' },
+      { value: 'engineering_fatima', text: 'Fatima Group' },
+      { value: 'engineering_fauji', text: 'Fauji Fertilizer Company (FFC)' },
+      { value: 'engineering_pel', text: 'Pak Elektron Limited (PEL)' },
+      { value: 'engineering_dawlance', text: 'Dawlance' },
+      { value: 'engineering_haier', text: 'Haier Pakistan' },
+      { value: 'engineering_atlas_battery', text: 'Atlas Battery' },
+      { value: 'engineering_honda_atlas', text: 'Honda Atlas Cars' },
+      { value: 'engineering_indus_motor', text: 'Indus Motor Company (Toyota)' },
+      { value: 'engineering_pak_suzuki', text: 'Pak Suzuki Motor Company' }
+    ]},
+    { label: '🛒 Consumer Goods, Retail & FMCG', options: [
+      { value: 'fmcg', text: 'Consumer Goods & FMCG (General)' },
+      { value: 'fmcg_unilever', text: 'Unilever Pakistan' },
+      { value: 'fmcg_pepsico', text: 'PepsiCo Pakistan' },
+      { value: 'fmcg_coca_cola', text: 'Coca-Cola Beverages Pakistan' },
+      { value: 'fmcg_nestle', text: 'Nestlé Pakistan' },
+      { value: 'fmcg_pg', text: 'P&G Pakistan' },
+      { value: 'fmcg_reckitt', text: 'Reckitt Benckiser (RB)' },
+      { value: 'fmcg_shan', text: 'Shan Foods' },
+      { value: 'fmcg_national_foods', text: 'National Foods' },
+      { value: 'fmcg_metro', text: 'Metro Pakistan' },
+      { value: 'fmcg_carrefour', text: 'Carrefour Pakistan' },
+      { value: 'fmcg_imtiaz', text: 'Imtiaz Super Market' },
+      { value: 'fmcg_tcs', text: 'TCS Express & Logistics' }
+    ]},
+    { label: '🏥 Healthcare', options: [
+      { value: 'healthcare', text: 'Healthcare (General)' },
+      { value: 'healthcare_shaukat', text: 'Shaukat Khanum Memorial Hospital' },
+      { value: 'healthcare_aku', text: 'Aga Khan University Hospital (AKUH)' },
+      { value: 'healthcare_indus_hospital', text: 'Indus Hospital & Health Network' }
+    ]},
+    { label: '📚 Education', options: [
+      { value: 'education', text: 'Education (General)' },
+      { value: 'education_lums', text: 'LUMS' },
+      { value: 'education_beaconhouse', text: 'Beaconhouse School System' },
+      { value: 'education_city_school', text: 'The City School' }
+    ]},
+    { label: '🤝 NGOs & Social Sector', options: [
+      { value: 'ngo', text: 'NGOs & Social Sector (General)' },
+      { value: 'ngo_saylani', text: 'Saylani Welfare Trust' },
+      { value: 'ngo_tcf', text: 'The Citizens Foundation (TCF)' }
+    ]},
+    { label: '🎯 Miscellaneous & Other Sectors', options: [
+      { value: 'misc', text: 'Miscellaneous (General)' },
+      { value: 'misc_murree', text: 'Murree Brewery Company' },
+      { value: 'misc_pc', text: 'Pearl Continental (PC) Hotels' },
+      { value: 'misc_serena', text: 'Serena Hotels Pakistan' },
+      { value: 'misc_airblue', text: 'Airblue' }
+    ]}
+  ];
+
+  const wrapper = document.getElementById('industrySearchWrapper');
+  const input = document.getElementById('industrySearchInput');
+  const dropdown = document.getElementById('searchDropdown');
+  const hiddenSelect = document.getElementById('industryPreset');
+  const toggleBtn = document.getElementById('toggleDropdownBtn');
+
+  let allOptions = [];       // flat array of {value, text, groupLabel}
+  let currentHighlights = [];
+
+  // Flatten the groups
+  industryGroups.forEach(group => {
+    group.options.forEach(opt => {
+      allOptions.push({
+        value: opt.value,
+        text: opt.text,
+        groupLabel: group.label
+      });
+    });
+  });
+
+  function renderDropdown(filterText = '') {
+    dropdown.innerHTML = '';
+    const search = filterText.toLowerCase().trim();
+    let visibleCount = 0;
+
+    industryGroups.forEach(group => {
+      const groupMatchedOptions = group.options.filter(opt =>
+        opt.text.toLowerCase().includes(search) ||
+        opt.value.toLowerCase().includes(search) ||
+        group.label.toLowerCase().includes(search)
+      );
+      if (groupMatchedOptions.length === 0) return;
+
+      // Group header
+      const header = document.createElement('div');
+      header.className = 'optgroup-label';
+      header.textContent = group.label;
+      dropdown.appendChild(header);
+
+      groupMatchedOptions.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'option-item';
+        item.dataset.value = opt.value;
+
+        // Highlight matching text
+        if (search && search.length > 0) {
+          const regex = new RegExp(`(${escapeRegExp(search)})`, 'gi');
+          item.innerHTML = opt.text.replace(regex, `<mark>$1</mark>`);
+        } else {
+          item.textContent = opt.text;
+        }
+
+        // Mark if selected
+        if (hiddenSelect.value === opt.value) {
+          item.classList.add('selected-highlight');
+        }
+
+        item.addEventListener('click', () => selectOption(opt.value, opt.text));
+        dropdown.appendChild(item);
+        visibleCount++;
+      });
+    });
+
+    if (visibleCount === 0) {
+      const noResult = document.createElement('div');
+      noResult.className = 'option-item';
+      noResult.textContent = 'No matching company found';
+      noResult.style.cursor = 'default';
+      noResult.style.color = 'var(--text-muted)';
+      dropdown.appendChild(noResult);
+    }
+
+    dropdown.classList.add('show');
+  }
+
+  function selectOption(value, text) {
+    hiddenSelect.value = value;
+    input.value = text;  // show selected text in input
+    dropdown.classList.remove('show');
+    toggleBtn.classList.remove('open');
+    applyIndustryPreset(value);  // trigger the preset function
+    // Update highlight
+    renderDropdown(''); // re-render to update selected class
+  }
+
+  // Escape regex special chars
+  function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Input event: filter as user types
+  input.addEventListener('input', () => {
+    const val = input.value.trim();
+    if (val === '') {
+      // Show all options
+      renderDropdown('');
+    } else {
+      renderDropdown(val);
+    }
+  });
+
+  // Toggle dropdown on click of arrow or input (when empty)
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (dropdown.classList.contains('show')) {
+      dropdown.classList.remove('show');
+      toggleBtn.classList.remove('open');
+    } else {
+      renderDropdown(input.value.trim());
+      toggleBtn.classList.add('open');
+    }
+  });
+
+  input.addEventListener('focus', () => {
+    if (!dropdown.classList.contains('show')) {
+      renderDropdown(input.value.trim());
+      toggleBtn.classList.add('open');
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      dropdown.classList.remove('show');
+      toggleBtn.classList.remove('open');
+    }
+  });
+
+  // Keyboard navigation (optional but nice)
+  input.addEventListener('keydown', (e) => {
+    if (!dropdown.classList.contains('show')) return;
+    const items = Array.from(dropdown.querySelectorAll('.option-item'));
+    const active = dropdown.querySelector('.option-item.active');
+    let index = items.indexOf(active);
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      index = (index + 1) % items.length;
+      items.forEach(i => i.classList.remove('active'));
+      items[index].classList.add('active');
+      items[index].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      index = (index - 1 + items.length) % items.length;
+      items.forEach(i => i.classList.remove('active'));
+      items[index].classList.add('active');
+      items[index].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      const activeItem = dropdown.querySelector('.option-item.active');
+      if (activeItem) {
+        e.preventDefault();
+        activeItem.click();
+      }
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('show');
+      toggleBtn.classList.remove('open');
+    }
+  });
+
+  // Initialize with empty selection
+  hiddenSelect.value = '';
+  input.value = '';
+})();

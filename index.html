@@ -42,169 +42,53 @@
         <div class="top-bar" id="topBar">
             <span class="logo"><i class="fas fa-star"></i> CV Builder Pro</span>
 
-            <button class="btn btn-sm btn-accent-outline active" data-template="classic" onclick="setTemplate('classic')">
-                <i class="fas fa-pencil-alt"></i> Classic
-            </button>
-            <button class="btn btn-sm btn-accent-outline" data-template="modern" onclick="setTemplate('modern')">
-                <i class="fas fa-bold"></i> Modern
-            </button>
-            <button class="btn btn-sm btn-accent-outline" data-template="creative" onclick="setTemplate('creative')">
-                <i class="fas fa-paint-brush"></i> Creative
-            </button>
+            <!-- Template Switcher (10 professionally designed templates) -->
+<div class="template-switcher">
+  <button class="btn btn-sm btn-accent-outline active" data-template="classic" onclick="setTemplate('classic')" title="Traditional layout with sidebar">
+    <i class="fas fa-file-alt"></i> Classic
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="modern" onclick="setTemplate('modern')" title="Modern dark sidebar">
+    <i class="fas fa-bold"></i> Modern
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="creative" onclick="setTemplate('creative')" title="Bold headers">
+    <i class="fas fa-paint-brush"></i> Creative
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="ats-classic" onclick="setTemplate('ats-classic')" title="Safe for applicant tracking systems (ATS)">
+    <i class="fas fa-robot"></i> ATS Classic
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="executive" onclick="setTemplate('executive')" title="Bold top header, no sidebar">
+    <i class="fas fa-crown"></i> Executive
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="minimal" onclick="setTemplate('minimal')" title="Clean single column">
+    <i class="fas fa-minus"></i> Minimal
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="tech" onclick="setTemplate('tech')" title="Monospace & code-friendly">
+    <i class="fas fa-laptop-code"></i> Tech
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="academic" onclick="setTemplate('academic')" title="Serif fonts, traditional academic style">
+    <i class="fas fa-university"></i> Academic
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="infographic" onclick="setTemplate('infographic')" title="Visual, metric-heavy layout">
+    <i class="fas fa-chart-pie"></i> Infographic
+  </button>
+  <button class="btn btn-sm btn-accent-outline" data-template="creative2" onclick="setTemplate('creative2')" title="Reverse layout with light sidebar">
+    <i class="fas fa-exchange-alt"></i> Creative 2
+  </button>
+</div>
 
-            <select id="industryPreset" onchange="applyIndustryPreset(this.value)" class="industry-select">
-    <option value="">🏭 Industry Preset (Pakistan)</option>
-    
-    <optgroup label="🏦 Banking & Finance">
-        <option value="banking">Banking & Finance (General)</option>
-        <option value="banking_hbl">Habib Bank Limited (HBL)</option>
-        <option value="banking_meezan">Meezan Bank</option>
-        <option value="banking_ubl">United Bank Limited (UBL)</option>
-        <option value="banking_alfalah">Bank Alfalah</option>
-        <option value="banking_state_life">State Life Insurance Corporation</option>
-    </optgroup>
-
-    <optgroup label="💻 IT & Technology">
-        <option value="it">IT & Technology (General)</option>
-        <option value="it_systems">Systems Limited</option>
-        <option value="it_arbisoft">Arbisoft</option>
-        <option value="it_netsol">NetSol Technologies</option>
-        <option value="it_ibex">Ibex Pakistan</option>
-    </optgroup>
-
-    <optgroup label="📡 Telecom">
-        <option value="telecom">Telecom (General)</option>
-        <option value="telecom_jazz">Jazz</option>
-        <option value="telecom_telenor">Telenor Pakistan</option>
-        <option value="telecom_zong">Zong 4G</option>
-        <option value="telecom_ufone">Ufone</option>
-    </optgroup>
-
-    <optgroup label="🧵 Textile & Carpet Manufacturing">
-        <option value="textile">Textile & Manufacturing (General)</option>
-        <option value="textile_gulahmed">Gul Ahmed Textile Mills</option>
-        <option value="textile_khaadi">Khaadi Corporation</option>
-        <option value="textile_nishat">Nishat Mills</option>
-        <option value="textile_interloop">Interloop Limited</option>
-        <option value="textile_nayyer">Nayyer Carpets</option>
-        <option value="textile_lahore_carpet">Lahore Carpet Manufacturing Co.</option>
-        <option value="textile_ziyan">Ziyan Textiles</option>
-        <option value="textile_kamal">Kamal Limited</option>
-        <option value="textile_bokhara">Bokhara House</option>
-        <option value="textile_ayesha">Ayesha Woollen Mills</option>
-        <option value="textile_multan_carpet">Multan Carpet Industries</option>
-    </optgroup>
-
-    <optgroup label="🏗️ Construction & Engineering">
-        <option value="construction">Construction & Engineering (General)</option>
-        <option value="construction_zkb">ZKB Engineers & Constructors</option>
-        <option value="construction_fwo">Frontier Works Organization (FWO)</option>
-        <option value="construction_nespak">NESPAK</option>
-        <option value="construction_cw">Construction & Works (C&W) Department</option>
-        <option value="construction_nlc">National Logistics Cell (NLC)</option>
-        <option value="construction_descon_eng">Descon Engineering</option>
-        <option value="construction_al_arab">Al-Arab Associates</option>
-        <option value="construction_ramzan">Muhammad Ramzan & Company</option>
-        <option value="construction_techno">Techno Time Construction</option>
-        <option value="construction_al_riaz">Al-Riaz Construction Co.</option>
-        <option value="construction_wahab">Wahab Engineering Services</option>
-        <option value="construction_ace">Ace Contractors</option>
-        <option value="construction_ammar">Ammar Group of Companies</option>
-        <option value="construction_banu">Banu Mukhtar Contracting</option>
-        <option value="construction_cecon">CECON Engineering</option>
-        <option value="construction_cneec">China National Electric Engineering (CNEEC)</option>
-        <option value="construction_constructwell">ConstructWell</option>
-        <option value="construction_dascon">Dascon Construction Company</option>
-        <option value="construction_dcon">Dcon Construction</option>
-        <option value="construction_deokjae">Deokjae Group Pakistan</option>
-        <option value="construction_earth">Earth Builders</option>
-        <option value="construction_imarat">Imarat Group</option>
-        <option value="construction_prism">Prism Estate & Builders</option>
-        <option value="construction_alwafa">Al-Wafa Estate & Builders</option>
-        <option value="construction_shehanshah">Shehanshah Estate and Builders</option>
-        <option value="construction_amer_adnan">Amer Adnan Associates</option>
-        <option value="construction_design_tech">Design Tech Engineering Solutions</option>
-    </optgroup>
-
-    <optgroup label="🪑 Furniture, Woodwork & Interiors">
-        <option value="furniture">Furniture & Woodwork (General)</option>
-        <option value="furniture_interwood">Interwood Mobel</option>
-        <option value="furniture_falaknaz">Falaknaz Group</option>
-        <option value="furniture_trigen">TriGen Interiors</option>
-        <option value="furniture_themes">Themes Furniture & Homestore</option>
-        <option value="furniture_mahenti">Mahenti Industries</option>
-        <option value="furniture_focus">Focus Interiors</option>
-        <option value="furniture_indoor">In Door Furniture</option>
-        <option value="furniture_galaxy">Galaxy Interior Furniture</option>
-        <option value="furniture_habitt">Habitt</option>
-        <option value="furniture_chenone">ChenOne Home</option>
-        <option value="furniture_aenzay">Aenzay Interiors & Architects</option>
-        <option value="furniture_zebra">Zebra.pk Interior & Contractors</option>
-        <option value="furniture_ghonsla">Ghonsla Construction</option>
-        <option value="furniture_alhaadi">Al Haadi Mobilya</option>
-        <option value="furniture_transeptia">Transeptia Construction Interior & Architect</option>
-    </optgroup>
-
-    <optgroup label="⚙️ Engineering & Industrial Manufacturing">
-        <option value="engineering">Engineering & Industrial (General)</option>
-        <option value="engineering_engro">Engro Corporation</option>
-        <option value="engineering_lucky">Lucky Core Industries (LCI)</option>
-        <option value="engineering_fatima">Fatima Group</option>
-        <option value="engineering_fauji">Fauji Fertilizer Company (FFC)</option>
-        <option value="engineering_pel">Pak Elektron Limited (PEL)</option>
-        <option value="engineering_dawlance">Dawlance</option>
-        <option value="engineering_haier">Haier Pakistan</option>
-        <option value="engineering_atlas_battery">Atlas Battery</option>
-        <option value="engineering_honda_atlas">Honda Atlas Cars</option>
-        <option value="engineering_indus_motor">Indus Motor Company (Toyota)</option>
-        <option value="engineering_pak_suzuki">Pak Suzuki Motor Company</option>
-    </optgroup>
-
-    <optgroup label="🛒 Consumer Goods, Retail & FMCG">
-        <option value="fmcg">Consumer Goods & FMCG (General)</option>
-        <option value="fmcg_unilever">Unilever Pakistan</option>
-        <option value="fmcg_pepsico">PepsiCo Pakistan</option>
-        <option value="fmcg_coca_cola">Coca-Cola Beverages Pakistan</option>
-        <option value="fmcg_nestle">Nestlé Pakistan</option>
-        <option value="fmcg_pg">P&G Pakistan</option>
-        <option value="fmcg_reckitt">Reckitt Benckiser (RB)</option>
-        <option value="fmcg_shan">Shan Foods</option>
-        <option value="fmcg_national_foods">National Foods</option>
-        <option value="fmcg_metro">Metro Pakistan</option>
-        <option value="fmcg_carrefour">Carrefour Pakistan</option>
-        <option value="fmcg_imtiaz">Imtiaz Super Market</option>
-        <option value="fmcg_tcs">TCS Express & Logistics</option>
-    </optgroup>
-
-    <optgroup label="🏥 Healthcare">
-        <option value="healthcare">Healthcare (General)</option>
-        <option value="healthcare_shaukat">Shaukat Khanum Memorial Hospital</option>
-        <option value="healthcare_aku">Aga Khan University Hospital (AKUH)</option>
-        <option value="healthcare_indus_hospital">Indus Hospital & Health Network</option>
-    </optgroup>
-
-    <optgroup label="📚 Education">
-        <option value="education">Education (General)</option>
-        <option value="education_lums">LUMS</option>
-        <option value="education_beaconhouse">Beaconhouse School System</option>
-        <option value="education_city_school">The City School</option>
-    </optgroup>
-
-    <optgroup label="🤝 NGOs & Social Sector">
-        <option value="ngo">NGOs & Social Sector (General)</option>
-        <option value="ngo_saylani">Saylani Welfare Trust</option>
-        <option value="ngo_tcf">The Citizens Foundation (TCF)</option>
-    </optgroup>
-
-    <optgroup label="🎯 Miscellaneous & Other Sectors">
-        <option value="misc">Miscellaneous (General)</option>
-        <option value="misc_murree">Murree Brewery Company</option>
-        <option value="misc_pc">Pearl Continental (PC) Hotels</option>
-        <option value="misc_serena">Serena Hotels Pakistan</option>
-        <option value="misc_airblue">Airblue</option>
-    </optgroup>
-</select>
-
+    <!-- Searchable Industry Preset -->
+<div class="searchable-select" id="industrySearchWrapper">
+  <div class="search-input-wrap">
+    <i class="fas fa-search search-icon"></i>
+    <input type="text" id="industrySearchInput" placeholder="Search company or sector..." autocomplete="off">
+    <i class="fas fa-chevron-down toggle-arrow" id="toggleDropdownBtn"></i>
+  </div>
+  <div class="search-dropdown" id="searchDropdown">
+        <!-- Options are generated dynamically via JS -->
+  </div>
+            <!-- Hidden input to store the selected value (same as old select) -->
+  <input type="hidden" id="industryPreset" value="">
+</div>
             <span class="badge badge-credits" id="creditBadge" onclick="openPaymentModal()">
                 <i class="fas fa-coins"></i> <span id="creditCount">1</span> Export Credit(s)
             </span>
@@ -220,116 +104,187 @@
             </button>
         </div>
 
-        <!-- Split Content -->
-        <div class="main-content">
-            <!-- Left: Forms -->
-            <aside class="form-panel" id="formPanel">
-                <div class="section-nav" id="sectionNav">
-                    <button class="active" data-section="personal"><i class="fas fa-user"></i> Personal</button>
-                    <button data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
-                    <button data-section="experience"><i class="fas fa-briefcase"></i> Experience</button>
-                    <button data-section="skills"><i class="fas fa-code"></i> Skills</button>
-                    <button data-section="languages"><i class="fas fa-language"></i> Languages</button>
-                    <button data-section="certifications"><i class="fas fa-certificate"></i> Certs</button>
-                    <button data-section="projects"><i class="fas fa-project-diagram"></i> Projects</button>
-                    <button data-section="awards"><i class="fas fa-award"></i> Awards</button>
-                    <button data-section="publications"><i class="fas fa-book"></i> Publications</button>
-                </div>
-
-                <div id="formSections">
-                    <!-- Personal -->
-                    <div class="form-section active" id="section-personal">
-                        <h3>Personal Information</h3>
-                        <div class="photo-upload">
-                            <img class="photo-preview" id="photoPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ccc'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='%23888' font-size='40'%3E%3C/text%3E%3C/svg%3E" alt="Profile">
-                            <div>
-                                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photoInput').click()"><i class="fas fa-camera"></i> Upload</button>
-                                <button class="btn btn-sm btn-danger" onclick="removePhoto()"><i class="fas fa-trash"></i></button>
-                                <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Full Name</label><input type="text" id="fullName" placeholder="Muhammad Ali" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" placeholder="Software Engineer" oninput="updatePreview()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="ali@example.com" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>Phone</label><input type="text" id="phone" placeholder="+92 300 1234567" oninput="updatePreview()"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Location</label><input type="text" id="location" placeholder="Lahore, Pakistan" oninput="updatePreview()"></div>
-                            <div class="form-group"><label>LinkedIn / Website</label><input type="text" id="website" placeholder="linkedin.com/in/ali" oninput="updatePreview()"></div>
-                        </div>
-                        <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="3" placeholder="Brief professional summary..." oninput="updatePreview()"></textarea></div>
-                    </div>
-
-                    <!-- Education -->
-                    <div class="form-section" id="section-education">
-                        <h3>Education</h3>
-                        <div id="educationEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addEducation()"><i class="fas fa-plus"></i> Add Education</button>
-                    </div>
-
-                    <!-- Experience -->
-                    <div class="form-section" id="section-experience">
-                        <h3>Work Experience</h3>
-                        <div id="experienceEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addExperience()"><i class="fas fa-plus"></i> Add Experience</button>
-                    </div>
-
-                    <!-- Skills -->
-                    <div class="form-section" id="section-skills">
-                        <h3>Skills</h3>
-                        <div id="skillsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addSkill()"><i class="fas fa-plus"></i> Add Skill</button>
-                    </div>
-
-                    <!-- Languages -->
-                    <div class="form-section" id="section-languages">
-                        <h3>Languages</h3>
-                        <div id="languagesEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addLanguage()"><i class="fas fa-plus"></i> Add Language</button>
-                    </div>
-
-                    <!-- Certifications -->
-                    <div class="form-section" id="section-certifications">
-                        <h3>Certifications</h3>
-                        <div id="certificationsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addCertification()"><i class="fas fa-plus"></i> Add Certification</button>
-                    </div>
-
-                    <!-- Projects -->
-                    <div class="form-section" id="section-projects">
-                        <h3>Projects</h3>
-                        <div id="projectsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addProject()"><i class="fas fa-plus"></i> Add Project</button>
-                    </div>
-
-                    <!-- Awards -->
-                    <div class="form-section" id="section-awards">
-                        <h3>Awards & Honors</h3>
-                        <div id="awardsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addAward()"><i class="fas fa-plus"></i> Add Award</button>
-                    </div>
-
-                    <!-- Publications -->
-                    <div class="form-section" id="section-publications">
-                        <h3>Publications</h3>
-                        <div id="publicationsEntries"></div>
-                        <button class="btn btn-sm btn-secondary" onclick="addPublication()"><i class="fas fa-plus"></i> Add Publication</button>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Right: CV Preview -->
-            <main class="preview-panel" id="previewPanel">
-                <div class="cv-page" id="cvPage">
-                    <div class="cv-inner" id="cvInner"></div>
-                </div>
-            </main>
+<!-- Split Content -->
+<div class="main-content">
+    <!-- Left: Forms -->
+    <aside class="form-panel" id="formPanel">
+        <div class="section-nav" id="sectionNav">
+            <button class="active" data-section="personal"><i class="fas fa-user"></i> Personal</button>
+            <button data-section="education"><i class="fas fa-graduation-cap"></i> Education</button>
+            <button data-section="experience"><i class="fas fa-briefcase"></i> Experience</button>
+            <button data-section="skills"><i class="fas fa-code"></i> Skills</button>
+            <button data-section="languages"><i class="fas fa-language"></i> Languages</button>
+            <button data-section="certifications"><i class="fas fa-certificate"></i> Certs</button>
+            <button data-section="projects"><i class="fas fa-project-diagram"></i> Projects</button>
+            <button data-section="awards"><i class="fas fa-award"></i> Awards</button>
+            <button data-section="publications"><i class="fas fa-book"></i> Publications</button>
+            <button data-section="coverletter"><i class="fas fa-envelope"></i> Cover</button>
+            <button data-section="matcher"><i class="fas fa-search-plus"></i> Job Match</button>
+            <!-- 👇 ADD THE COVER LETTER BUTTON HERE -->
+            <button data-section="coverletter"><i class="fas fa-envelope"></i> Cover</button>
         </div>
-    </div>
 
+        <div id="formSections">
+            <!-- Personal -->
+            <div class="form-section active" id="section-personal">
+                <h3>Personal Information</h3>
+                <div class="photo-upload">
+                    <img class="photo-preview" id="photoPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ccc'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' fill='%23888' font-size='40'%3E%3C/text%3E%3C/svg%3E" alt="Profile">
+                    <div>
+                        <button class="btn btn-sm btn-secondary" onclick="document.getElementById('photoInput').click()"><i class="fas fa-camera"></i> Upload</button>
+                        <button class="btn btn-sm btn-danger" onclick="removePhoto()"><i class="fas fa-trash"></i></button>
+                        <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)" hidden>
+                    </div>
+                </div>   
+                <div class="form-row">
+                    <div class="form-group"><label>Full Name</label><input type="text" id="fullName" placeholder="Muhammad Ali" oninput="updatePreview()"></div>
+                    <div class="form-group"><label>Job Title</label><input type="text" id="jobTitle" placeholder="Software Engineer" oninput="updatePreview()"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Email</label><input type="email" id="email" placeholder="ali@example.com" oninput="updatePreview()"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone" placeholder="+92 300 1234567" oninput="updatePreview()"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Location</label><input type="text" id="location" placeholder="Lahore, Pakistan" oninput="updatePreview()"></div>
+                    <div class="form-group"><label>LinkedIn / Website</label><input type="text" id="website" placeholder="linkedin.com/in/ali" oninput="updatePreview()"></div>
+                </div>
+                <div class="form-group"><label>Professional Summary</label><textarea id="summary" rows="3" placeholder="Brief professional summary..." oninput="updatePreview()"></textarea></div>
+            </div>
+
+              <!-- ✅ ADD THE JOB MATCHER SECTION RIGHT BELOW -->
+  <div class="form-section" id="section-matcher">
+    <h3>ATS Job Matcher</h3>
+    <textarea id="jdText" rows="5" placeholder="Paste the full job description here..."></textarea><br>
+    <button class="btn btn-sm btn-primary" onclick="matchJobDescription()">Analyze Match</button>
+    <div id="matchResult" style="margin-top:1rem; color:var(--text-secondary);"></div>
+    <div id="keywordSuggestions" style="margin-top:0.5rem;"></div>
+  </div>
+
+</div> 
+
+            <!-- Education -->
+            <div class="form-section" id="section-education">
+                <h3>Education</h3>
+                <div id="educationEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addEducation()"><i class="fas fa-plus"></i> Add Education</button>
+            </div>
+
+            <!-- Experience -->
+            <div class="form-section" id="section-experience">
+                <h3>Work Experience</h3>
+                <div id="experienceEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addExperience()"><i class="fas fa-plus"></i> Add Experience</button>
+            </div>
+
+            <!-- Skills -->
+            <div class="form-section" id="section-skills">
+                <h3>Skills</h3>
+                <div id="skillsEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addSkill()"><i class="fas fa-plus"></i> Add Skill</button>
+            </div>
+
+            <!-- Languages -->
+            <div class="form-section" id="section-languages">
+                <h3>Languages</h3>
+                <div id="languagesEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addLanguage()"><i class="fas fa-plus"></i> Add Language</button>
+            </div>
+
+            <!-- Certifications -->
+            <div class="form-section" id="section-certifications">
+                <h3>Certifications</h3>
+                <div id="certificationsEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addCertification()"><i class="fas fa-plus"></i> Add Certification</button>
+            </div>
+
+            <!-- Projects -->
+            <div class="form-section" id="section-projects">
+                <h3>Projects</h3>
+                <div id="projectsEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addProject()"><i class="fas fa-plus"></i> Add Project</button>
+            </div>
+
+            <!-- Awards -->
+            <div class="form-section" id="section-awards">
+                <h3>Awards & Honors</h3>
+                <div id="awardsEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addAward()"><i class="fas fa-plus"></i> Add Award</button>
+            </div>
+
+            <!-- Publications -->
+            <div class="form-section" id="section-publications">
+                <h3>Publications</h3>
+                <div id="publicationsEntries"></div>
+                <button class="btn btn-sm btn-secondary" onclick="addPublication()"><i class="fas fa-plus"></i> Add Publication</button>
+            </div>
+
+            <!-- Cover Letter -->
+            <div class="form-section" id="section-coverletter">
+                <h3>Cover Letter</h3>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="text" id="clDate" placeholder="15 May 2025" oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Hiring Manager Name (optional)</label>
+                    <input type="text" id="clManager" placeholder="Mr. Khan" oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="clCompany" placeholder="Systems Limited" oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Position Applied For</label>
+                    <input type="text" id="clPosition" placeholder="Senior Software Engineer" oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Your Address (City)</label>
+                    <input type="text" id="clAddress" placeholder="Lahore" oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Salutation</label>
+                    <input type="text" id="clSalutation" value="Dear Hiring Manager," oninput="updateCoverLetter()">
+                </div>
+                <div class="form-group">
+                    <label>Opening Paragraph</label>
+                    <textarea id="clOpening" rows="3" placeholder="I am excited to apply..." oninput="updateCoverLetter()">I am writing to express my enthusiastic interest in the {position} role at {company}. With my background in {field}, I believe I can contribute meaningfully to your team.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Body Paragraph 1</label>
+                    <textarea id="clBody1" rows="3" placeholder="In my previous role..." oninput="updateCoverLetter()">In my most recent role, I successfully {accomplishment} which resulted in {result}. I am skilled in {skill1} and {skill2}, which directly align with the requirements of this position.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Body Paragraph 2</label>
+                    <textarea id="clBody2" rows="3" placeholder="What excites me about this opportunity..." oninput="updateCoverLetter()">What particularly attracts me to {company} is your commitment to {value}. I have always admired your work in {area} and I am eager to bring my expertise to such an innovative environment.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Closing Paragraph</label>
+                    <textarea id="clClosing" rows="2" placeholder="Thank you for considering..." oninput="updateCoverLetter()">I would welcome the opportunity to discuss how my skills can benefit {company}. Thank you for your time and consideration.</textarea>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="exportCoverLetter()"><i class="fas fa-file-pdf"></i> Export Cover Letter as PDF</button>
+            </div>
+
+            <!-- Job Matcher -->
+            <div class="form-section" id="section-matcher">
+                <h3>ATS Job Matcher</h3>
+                <label>Paste the full job description below</label>
+                <textarea id="jdText" rows="5" placeholder="Paste job description here..."></textarea>
+                <button class="btn btn-sm btn-primary" onclick="matchJobDescription()" style="margin-top:0.5rem;">
+                    <i class="fas fa-search-plus"></i> Analyze Match
+                </button>
+                <div id="matchResult" style="margin-top:1.5rem; color:var(--text-secondary);"></div>
+                <div id="keywordSuggestions" style="margin-top:0.5rem;"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Right: CV Preview -->
+    <main class="preview-panel" id="previewPanel">
+        <div class="cv-page" id="cvPage">
+            <div class="cv-inner" id="cvInner"></div>
+        </div>
+    </main>
+</div>
     <!-- ============= MODALS ============= -->
     <!-- Payment Modal -->
     <div class="modal-overlay" id="paymentModal">
