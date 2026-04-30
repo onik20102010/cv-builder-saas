@@ -11,8 +11,32 @@ let userData = {
     awards: [],
     publications: [],
     settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', fontSize: '16px' },
-    credits: 1
+    credits: 5
 };
+
+// ==================== ACHIEVEMENT / EXAMPLE DATABASE ====================
+const contentExamples = {
+  'summary': {
+    'banking': '• Detail-oriented banking professional with 5+ years of experience in retail banking operations at HBL.\n• Proven track record in risk management and compliance, reducing fraud incidents by 20%.\n• Expert in Shariah-compliant financial products and customer relationship management.',
+    'it': '• Full-stack developer with 3 years of experience building scalable web applications using React, Node.js, and AWS.\n• Led migration of legacy system to microservices, improving uptime to 99.9%.\n• Passionate about writing clean, maintainable code and mentoring junior developers.',
+    'general': '• Dedicated professional with a strong background in [your field], excelling in [key skill] and [another skill].\n• Achieved [quantifiable achievement] at [previous company], resulting in [business impact].\n• Seeking to leverage expertise at a challenging organization where I can contribute immediately.'
+  },
+  'experience': {
+    'general': '• Spearheaded a digital transformation initiative that reduced process time by 40%.\n• Managed a cross-functional team of 15 members, delivering projects on time and under budget.\n• Implemented new customer feedback system, raising satisfaction scores from 78% to 92%.',
+    'banking': '• Processed 100+ customer applications weekly while maintaining 98% accuracy.\n• Led a team to implement a new loan tracking system, cutting approval time by 30%.\n• Consistently exceeded sales targets for new accounts by 20%.'
+  }
+};
+
+// ==================== MOBILE TOGGLE ====================
+function handleMobileLayout() {
+  const appContainer = document.getElementById('appContainer');
+  if (window.innerWidth <= 500) {
+    appContainer.classList.add('preview-hidden');
+  } else {
+    appContainer.classList.remove('preview-hidden');
+  }
+}
+window.addEventListener('resize', handleMobileLayout);
 
 // ==================== AUTH ====================
 function simpleHash(str) {
@@ -47,7 +71,7 @@ function loadFromStorage(key) {
                 awards: parsed.awards || [],
                 publications: parsed.publications || [],
                 settings: Object.assign({ template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', fontSize: '16px' }, parsed.settings),
-                credits: parsed.credits ?? 1
+                credits: parsed.credits ?? 5
             };
             return true;
         } catch (e) {
@@ -66,9 +90,9 @@ document.getElementById('authSubmit').addEventListener('click', () => {
     currentUserKey = simpleHash(password);
     const exists = loadFromStorage(currentUserKey);
     if (!exists) {
-        userData.credits = 1;
+        userData.credits = 5;
         saveToStorage();
-        showToast('New account created! 1 free export credit.', 'success');
+        showToast('New account created! 5 free export credits.', 'success');
     } else {
         showToast('Welcome back! Data loaded.', 'success');
     }
@@ -111,6 +135,7 @@ function initApp() {
     rebuildAllDynamicEntries();
     updatePreview();
     setupSectionNav();
+    handleMobileLayout(); // apply mobile layout
 }
 
 function setupSectionNav() {
@@ -195,15 +220,13 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
-// Cover Letter exporter (uses a hidden iframe or direct print style)
+// Cover Letter persistence (optional)
 function updateCoverLetter() {
-  // Store values in userData (optional, for persistence)
   userData.coverLetter = {
     date: document.getElementById('clDate').value,
     manager: document.getElementById('clManager').value,
     company: document.getElementById('clCompany').value,
     position: document.getElementById('clPosition').value,
-    // ... etc
   };
   saveToStorage();
 }
@@ -212,16 +235,10 @@ function matchJobDescription() {
   const jd = document.getElementById('jdText').value.trim().toLowerCase();
   if (!jd) return showToast('Paste a job description first.', 'error');
   
-  // Extract all text from current CV
   const cvText = document.getElementById('cvInner').innerText.toLowerCase();
-  
-  // Simple keyword frequency analysis
-  const jdWords = jd.match(/\b\w{4,}\b/g) || [];
   const commonSkills = ['javascript','python','react','node','sql','project management','leadership','communication','agile','marketing','sales','finance','accounting','human resource','data analysis','machine learning'];
   
-  let found = [];
-  let missing = [];
-  
+  let found = [], missing = [];
   commonSkills.forEach(skill => {
     if (jd.includes(skill)) {
       if (cvText.includes(skill)) found.push(skill);
@@ -230,17 +247,14 @@ function matchJobDescription() {
   });
   
   const matchPercent = Math.round((found.length / (found.length + missing.length || 1)) * 100);
-  
   let resultHTML = `<p><strong>Match Score:</strong> ${matchPercent}%</p>`;
   if (found.length) resultHTML += `<p><span style="color:#00cec9">✓ Found keywords:</span> ${found.join(', ')}</p>`;
   if (missing.length) resultHTML += `<p><span style="color:#e17055">⚠ Missing keywords (add to your CV):</span> ${missing.join(', ')}</p>`;
-  
   document.getElementById('matchResult').innerHTML = resultHTML;
   showToast(`CV matches ${matchPercent}% of job keywords.`, 'info');
 }
 
 function exportCoverLetter() {
-  // Build cover letter HTML
   const name = userData.personalInfo.fullName || 'Your Name';
   const email = userData.personalInfo.email || '';
   const phone = userData.personalInfo.phone || '';
@@ -278,7 +292,7 @@ function exportCoverLetter() {
   showToast('Cover letter ready for print.', 'success');
 }
 
-// --- Entry HTML creators ---
+// --- Entry HTML creators (Experience enhanced with example button) ---
 function createEducationHTML(entry) {
     return `<div class="form-row">
       <div class="form-group"><label>Degree</label><input type="text" data-field="degree" value="${escapeHTML(entry.degree || '')}" placeholder="BSc Computer Science"></div>
@@ -298,7 +312,13 @@ function createExperienceHTML(entry) {
       <div class="form-group"><label>Start Date</label><input type="text" data-field="startDate" value="${escapeHTML(entry.startDate || '')}" placeholder="Jan 2022"></div>
       <div class="form-group"><label>End Date</label><input type="text" data-field="endDate" value="${escapeHTML(entry.endDate || '')}" placeholder="Present"></div>
     </div>
-    <div class="form-group"><label>Description</label><textarea data-field="description" rows="2" placeholder="Responsibilities...">${escapeHTML(entry.description || '')}</textarea></div>`;
+    <div class="form-group">
+      <label>
+        Description
+        <button class="btn-example" data-type="experience" title="See examples"><i class="fas fa-lightbulb"></i></button>
+      </label>
+      <textarea data-field="description" rows="2" placeholder="Responsibilities...">${escapeHTML(entry.description || '')}</textarea>
+    </div>`;
 }
 function createSkillHTML(entry) {
     return `<div class="form-row">
@@ -338,7 +358,13 @@ function createProjectHTML(entry) {
       <div class="form-group"><label>Year</label><input type="text" data-field="year" value="${escapeHTML(entry.year || '')}" placeholder="2024"></div>
       <div class="form-group"><label>Link</label><input type="text" data-field="link" value="${escapeHTML(entry.link || '')}" placeholder="https://github.com/..."></div>
     </div>
-    <div class="form-group"><label>Description</label><textarea data-field="description" rows="2" placeholder="Brief overview...">${escapeHTML(entry.description || '')}</textarea></div>`;
+    <div class="form-group">
+      <label>
+        Description
+        <button class="btn-example" data-type="experience" title="See examples"><i class="fas fa-lightbulb"></i></button>
+      </label>
+      <textarea data-field="description" rows="2" placeholder="Brief overview...">${escapeHTML(entry.description || '')}</textarea>
+    </div>`;
 }
 function createAwardHTML(entry) {
     return `<div class="form-row">
@@ -393,7 +419,6 @@ function removePhoto() {
 
 // ==================== UPDATE PREVIEW ====================
 function updatePreview() {
-    // Sync inputs
     userData.personalInfo.fullName = document.getElementById('fullName').value;
     userData.personalInfo.jobTitle = document.getElementById('jobTitle').value;
     userData.personalInfo.email = document.getElementById('email').value;
@@ -659,28 +684,22 @@ function updateCreditDisplay() {
 function openPaymentModal() { document.getElementById('paymentModal').classList.add('active'); }
 function closePaymentModal() { document.getElementById('paymentModal').classList.remove('active'); }
 function simulatePayment(method) {
-    userData.credits += 3;
+    userData.credits += 5;
     updateCreditDisplay();
     saveToStorage();
     closePaymentModal();
-    showToast(`Simulated ${method} payment! +3 credits.`, 'success');
+    showToast(`Simulated ${method} payment! +5 credits.`, 'success');
 }
 
 // ==================== EXPORT PDF ====================
-// At start: userData.credits should default to 5
-// In loadFromStorage, change the fallback: credits: parsed.credits ?? 5
-
-// Update exportPDF
 function exportPDF() {
     if (userData.credits <= 0) {
-        // Friendly upgrade dialog instead of full block
         if (confirm('You have 0 free exports left.\nWould you like to buy an affordable credit pack?\n(You can also continue, but the PDF will have a small watermark.)')) {
             openPaymentModal();
         } else {
-            // Allow export with watermark (we can add a gentle overlay via JS before print)
-            updatePreview(); // ensure latest data
+            updatePreview();
             setTimeout(() => {
-                addWatermark(); // simple function that adds a transparent watermark to cvPage
+                addWatermark();
                 window.print();
                 removeWatermark();
                 showToast('Watermarked PDF exported. Consider upgrading for watermark-free.', 'warning');
@@ -688,7 +707,6 @@ function exportPDF() {
         }
         return;
     }
-    // Normal export
     if (!confirm('This will use 1 of your ' + userData.credits + ' free exports. Continue?')) return;
     userData.credits--;
     updateCreditDisplay();
@@ -711,6 +729,7 @@ function removeWatermark() {
     const wm = document.getElementById('watermark');
     if (wm) wm.remove();
 }
+
 // ==================== TOAST ====================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
@@ -733,12 +752,8 @@ document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'e') { e.preventDefault(); exportPDF(); }
 });
 
-// ==================== READY ====================
-console.log('CV Builder Pro ready');
-
 // ==================== SEARCHABLE INDUSTRY DROPDOWN ====================
 (function() {
-  // Original options data – extracted from the old select (copy-pasted)
   const industryGroups = [
     { label: '🏦 Banking & Finance', options: [
       { value: 'banking', text: 'Banking & Finance (General)' },
@@ -885,8 +900,7 @@ console.log('CV Builder Pro ready');
   const hiddenSelect = document.getElementById('industryPreset');
   const toggleBtn = document.getElementById('toggleDropdownBtn');
 
-  let allOptions = [];       // flat array of {value, text, groupLabel}
-  let currentHighlights = [];
+  let allOptions = [];
 
   // Flatten the groups
   industryGroups.forEach(group => {
@@ -912,7 +926,6 @@ console.log('CV Builder Pro ready');
       );
       if (groupMatchedOptions.length === 0) return;
 
-      // Group header
       const header = document.createElement('div');
       header.className = 'optgroup-label';
       header.textContent = group.label;
@@ -923,7 +936,6 @@ console.log('CV Builder Pro ready');
         item.className = 'option-item';
         item.dataset.value = opt.value;
 
-        // Highlight matching text
         if (search && search.length > 0) {
           const regex = new RegExp(`(${escapeRegExp(search)})`, 'gi');
           item.innerHTML = opt.text.replace(regex, `<mark>$1</mark>`);
@@ -931,7 +943,6 @@ console.log('CV Builder Pro ready');
           item.textContent = opt.text;
         }
 
-        // Mark if selected
         if (hiddenSelect.value === opt.value) {
           item.classList.add('selected-highlight');
         }
@@ -956,31 +967,22 @@ console.log('CV Builder Pro ready');
 
   function selectOption(value, text) {
     hiddenSelect.value = value;
-    input.value = text;  // show selected text in input
+    input.value = text;
     dropdown.classList.remove('show');
     toggleBtn.classList.remove('open');
-    applyIndustryPreset(value);  // trigger the preset function
-    // Update highlight
-    renderDropdown(''); // re-render to update selected class
+    applyIndustryPreset(value);
+    renderDropdown('');
   }
 
-  // Escape regex special chars
   function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  // Input event: filter as user types
   input.addEventListener('input', () => {
     const val = input.value.trim();
-    if (val === '') {
-      // Show all options
-      renderDropdown('');
-    } else {
-      renderDropdown(val);
-    }
+    renderDropdown(val);
   });
 
-  // Toggle dropdown on click of arrow or input (when empty)
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (dropdown.classList.contains('show')) {
@@ -999,7 +1001,6 @@ console.log('CV Builder Pro ready');
     }
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener('click', (e) => {
     if (!wrapper.contains(e.target)) {
       dropdown.classList.remove('show');
@@ -1007,7 +1008,6 @@ console.log('CV Builder Pro ready');
     }
   });
 
-  // Keyboard navigation (optional but nice)
   input.addEventListener('keydown', (e) => {
     if (!dropdown.classList.contains('show')) return;
     const items = Array.from(dropdown.querySelectorAll('.option-item'));
@@ -1037,7 +1037,75 @@ console.log('CV Builder Pro ready');
     }
   });
 
-  // Initialize with empty selection
   hiddenSelect.value = '';
   input.value = '';
 })();
+
+// ==================== MOBILE PREVIEW TOGGLE ====================
+const mobileToggle = document.getElementById('mobilePreviewToggle');
+const appContainer = document.getElementById('appContainer');
+if (mobileToggle) {
+  mobileToggle.addEventListener('click', () => {
+    appContainer.classList.toggle('preview-hidden');
+    const icon = mobileToggle.querySelector('i');
+    if (appContainer.classList.contains('preview-hidden')) {
+      icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+      icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+  });
+}
+
+// ==================== ACHIEVEMENT EXAMPLE HANDLER ====================
+function showExample(type) {
+  const tooltip = document.getElementById('globalExampleTooltip');
+  const btn = document.activeElement?.closest('.btn-example');
+  if (!tooltip || !btn) return;
+
+  if (tooltip.style.display === 'block' && tooltip.dataset.activeType === type) {
+    tooltip.style.display = 'none';
+    return;
+  }
+
+  let industry = 'general';
+  const selectedIndustry = document.getElementById('industryPreset').value;
+  if (selectedIndustry) {
+    const parts = selectedIndustry.split('_')[0];
+    if (contentExamples[type]?.[parts]) industry = parts;
+  }
+
+  const exampleText = contentExamples[type]?.[industry] || contentExamples[type]?.['general'] || 'No example available.';
+  tooltip.textContent = exampleText;
+  tooltip.dataset.activeType = type;
+
+  const rect = btn.getBoundingClientRect();
+  const tooltipWidth = 280;
+  const tooltipHeight = 120;
+  let top = rect.bottom + 6;
+  let left = rect.left;
+  if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10;
+  if (top + tooltipHeight > window.innerHeight) top = rect.top - tooltipHeight - 6;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+  tooltip.style.display = 'block';
+
+  clearTimeout(window.exampleHideTimer);
+  window.exampleHideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 12000);
+}
+
+// Attach example click listener globally
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.btn-example')) {
+    const btn = e.target.closest('.btn-example');
+    const type = btn.dataset.type;
+    showExample(type);
+  }
+  // Hide tooltip if clicking outside
+  if (!e.target.closest('.btn-example') && !e.target.closest('#globalExampleTooltip')) {
+    const tooltip = document.getElementById('globalExampleTooltip');
+    if (tooltip) tooltip.style.display = 'none';
+  }
+});
+
+// ==================== READY ====================
+console.log('CV Builder Pro ready');

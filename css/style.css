@@ -780,7 +780,8 @@ label {
   to { transform: translateX(120%); opacity: 0; }
 }
 
-/* ==================== RESPONSIVE ==================== */
+/* ==================== RESPONSIVE (Enhanced) ==================== */
+/* Tablet and below */
 @media (max-width: 900px) {
   .main-content {
     flex-direction: column;
@@ -788,6 +789,7 @@ label {
   .form-panel {
     width: 100%;
     height: 50vh;
+    min-width: 0;
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -796,20 +798,109 @@ label {
     padding: 1rem;
   }
   .cv-page {
-    transform-origin: top center;
     transform: scale(0.7);
-  }
-}
-@media (max-width: 500px) {
-  .cv-page {
-    transform: scale(0.45);
+    transform-origin: top center;
   }
   .top-bar {
     justify-content: center;
   }
-  .logo { margin: 0 auto 0.5rem auto; width: 100%; text-align: center; justify-content: center; }
-  .form-row { flex-direction: column; gap: 0; }
-  .industry-select { width: 100%; }
+  .logo {
+    margin: 0 auto 0.5rem auto;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .template-switcher {
+    justify-content: center;
+  }
+  /* Section nav: still horizontal but better for touch */
+  .section-nav {
+    padding: 0.8rem 1rem;
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .section-nav button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+}
+
+/* Small mobile (≤ 500px) */
+@media (max-width: 500px) {
+  .top-bar {
+    padding: 0.5rem;
+    gap: 0.4rem;
+  }
+  .logo {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+  .cv-page {
+    transform: scale(0.5);
+    transform-origin: top center;
+  }
+  .form-panel {
+    height: 45vh;
+  }
+  .preview-panel {
+    height: 55vh;
+    padding: 0.5rem;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .industry-select {
+    width: 100%;
+  }
+  /* Hide some less-essential template buttons on very small screens */
+  .template-switcher .btn[data-template="academic"],
+  .template-switcher .btn[data-template="infographic"],
+  .template-switcher .btn[data-template="creative2"],
+  .template-switcher .btn[data-template="executive"] {
+    display: none;
+  }
+
+  /* Floating preview toggle button */
+  .preview-toggle-btn {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 500;
+    background: var(--accent-main);
+    color: #fff;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+
+  /* When preview is hidden, show form full screen */
+  .app-container.preview-hidden .preview-panel {
+    display: none;
+  }
+  .app-container.preview-hidden .form-panel {
+    height: 100vh;
+  }
+}
+
+/* Hide toggle on larger screens */
+.preview-toggle-btn {
+  display: none;
+}
+@media (max-width: 500px) {
+  .preview-toggle-btn {
+    display: flex;
+  }
 }
 
 /* ==================== PRINT STYLES ==================== */
@@ -1198,4 +1289,39 @@ input, textarea, select {
     rgba(255,255,255,0.015) 10px,
     rgba(255,255,255,0.015) 20px
   );
+}
+
+/* ==================== ACHIEVEMENT / EXAMPLE GUIDANCE ==================== */
+/* Lightbulb example button */
+.btn-example {
+  background: none;
+  border: none;
+  color: var(--accent-gold);
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.btn-example:hover {
+  color: #fdcb6e;
+}
+
+/* Floating global tooltip for examples */
+#globalExampleTooltip {
+  position: fixed;
+  z-index: 999;
+  background: rgba(30, 30, 45, 0.98);
+  border: 1px solid var(--accent-gold);
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  white-space: pre-line;
+  max-width: 300px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.15s ease;
+  display: none;
 }
