@@ -13,7 +13,6 @@ let userData = {
     settings: { template: 'classic', accentColor: '#6c5ce7', fontStyle: 'inter', borderRadius: '2px', fontSize: '16px' },
     credits: 5
 };
-
 // ==================== ACHIEVEMENT / EXAMPLE DATABASE ====================
 const contentExamples = {
   'summary': {
@@ -26,7 +25,6 @@ const contentExamples = {
     'banking': '• Processed 100+ customer applications weekly while maintaining 98% accuracy.\n• Led a team to implement a new loan tracking system, cutting approval time by 30%.\n• Consistently exceeded sales targets for new accounts by 20%.'
   }
 };
-
 // ==================== MOBILE TOGGLE ====================
 function handleMobileLayout() {
   const appContainer = document.getElementById('appContainer');
@@ -37,7 +35,6 @@ function handleMobileLayout() {
   }
 }
 window.addEventListener('resize', handleMobileLayout);
-
 // ==================== AUTH ====================
 function simpleHash(str) {
     let hash = 0;
@@ -48,12 +45,10 @@ function simpleHash(str) {
     }
     return 'cv_user_' + Math.abs(hash).toString(36);
 }
-
 function saveToStorage() {
     if (!currentUserKey) return;
     localStorage.setItem(currentUserKey, JSON.stringify(userData));
 }
-
 function loadFromStorage(key) {
     const raw = localStorage.getItem(key);
     if (raw) {
@@ -80,7 +75,6 @@ function loadFromStorage(key) {
     }
     return false;
 }
-
 document.getElementById('authSubmit').addEventListener('click', () => {
     const password = document.getElementById('authPassword').value.trim();
     if (password.length < 4) {
@@ -101,18 +95,15 @@ document.getElementById('authSubmit').addEventListener('click', () => {
     document.getElementById('authPassword').value = '';
     initApp();
 });
-
 document.getElementById('authPassword').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('authSubmit').click();
 });
-
 function logout() {
     if (confirm('Log out? Your data is saved locally.')) {
         saveToStorage();
         location.reload(); // simplest reset
     }
 }
-
 // ==================== INIT ====================
 function initApp() {
     document.getElementById('fullName').value = userData.personalInfo.fullName || '';
@@ -137,7 +128,6 @@ function initApp() {
     setupSectionNav();
     handleMobileLayout(); // apply mobile layout
 }
-
 function setupSectionNav() {
     const buttons = document.querySelectorAll('#sectionNav button');
     buttons.forEach(btn => {
@@ -150,7 +140,6 @@ function setupSectionNav() {
         });
     });
 }
-
 // ==================== DYNAMIC ENTRIES ====================
 function rebuildAllDynamicEntries() {
     rebuildEntries('educationEntries', userData.education, createEducationHTML, 'education');
@@ -162,7 +151,6 @@ function rebuildAllDynamicEntries() {
     rebuildEntries('awardsEntries', userData.awards, createAwardHTML, 'awards');
     rebuildEntries('publicationsEntries', userData.publications, createPublicationHTML, 'publications');
 }
-
 function rebuildEntries(containerId, dataArray, htmlFn, type) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -192,7 +180,6 @@ function rebuildEntries(containerId, dataArray, htmlFn, type) {
         container.appendChild(div);
     });
 }
-
 function updateEntryFromDOM(type, index, div) {
     const inputs = div.querySelectorAll('input, textarea, select');
     const data = {};
@@ -213,13 +200,11 @@ function updateEntryFromDOM(type, index, div) {
         Object.assign(arrayMap[type][index], data);
     }
 }
-
 function escapeHTML(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
 }
-
 // Cover Letter persistence (optional)
 function updateCoverLetter() {
   userData.coverLetter = {
@@ -230,7 +215,6 @@ function updateCoverLetter() {
   };
   saveToStorage();
 }
-
 function matchJobDescription() {
   const jd = document.getElementById('jdText').value.trim().toLowerCase();
   if (!jd) return showToast('Paste a job description first.', 'error');
@@ -253,7 +237,6 @@ function matchJobDescription() {
   document.getElementById('matchResult').innerHTML = resultHTML;
   showToast(`CV matches ${matchPercent}% of job keywords.`, 'info');
 }
-
 function exportCoverLetter() {
   const name = userData.personalInfo.fullName || 'Your Name';
   const email = userData.personalInfo.email || '';
@@ -268,7 +251,6 @@ function exportCoverLetter() {
   const body1 = document.getElementById('clBody1').value;
   const body2 = document.getElementById('clBody2').value;
   const closing = document.getElementById('clClosing').value;
-
   const clHTML = `
     <div style="font-family: 'Inter', sans-serif; max-width: 700px; margin: 40px auto; padding: 40px; border: 1px solid #ccc;">
       <p style="text-align:right; color:#555">${date}</p>
@@ -291,7 +273,6 @@ function exportCoverLetter() {
   win.print();
   showToast('Cover letter ready for print.', 'success');
 }
-
 // --- Entry HTML creators (Experience enhanced with example button) ---
 function createEducationHTML(entry) {
     return `<div class="form-row">
@@ -383,7 +364,6 @@ function createPublicationHTML(entry) {
       <div class="form-group"><label>Link</label><input type="text" data-field="link" value="${escapeHTML(entry.link || '')}" placeholder="https://doi.org/..."></div>
     </div>`;
 }
-
 // Add functions
 function addEducation(){ userData.education.push({degree:'',institution:'',year:'',grade:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
 function addExperience(){ userData.experience.push({jobTitle:'',company:'',startDate:'',endDate:'',description:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
@@ -393,7 +373,6 @@ function addCertification(){ userData.certifications.push({name:'',issuer:'',yea
 function addProject(){ userData.projects.push({name:'',role:'',year:'',link:'',description:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
 function addAward(){ userData.awards.push({title:'',issuer:'',year:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
 function addPublication(){ userData.publications.push({title:'',publisher:'',year:'',link:''}); rebuildAllDynamicEntries(); updatePreview(); saveToStorage(); }
-
 // ==================== PHOTO ====================
 function handlePhotoUpload(event) {
     const file = event.target.files[0];
@@ -416,7 +395,6 @@ function removePhoto() {
     saveToStorage();
     showToast('Photo removed', 'success');
 }
-
 // ==================== UPDATE PREVIEW ====================
 function updatePreview() {
     userData.personalInfo.fullName = document.getElementById('fullName').value;
@@ -427,12 +405,10 @@ function updatePreview() {
     userData.personalInfo.website = document.getElementById('website').value;
     userData.personalInfo.summary = document.getElementById('summary').value;
     saveToStorage();
-
     const cvInner = document.getElementById('cvInner');
     const pi = userData.personalInfo;
     const settings = userData.settings;
     const accent = settings.accentColor || '#6c5ce7';
-
     let html = `
     <div class="cv-sidebar">
       <div class="cv-photo-section">
@@ -477,16 +453,13 @@ function updatePreview() {
       ${userData.awards.length ? `<div class="cv-section"><h2 class="cv-section-heading">Awards & Honors</h2>${userData.awards.map(a => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(a.title || 'Award')}</div><div class="cv-entry-sub">${escapeHTML(a.issuer || 'Issuer')} · ${escapeHTML(a.year || 'Year')}</div></div>`).join('')}</div>` : ''}
       ${userData.publications.length ? `<div class="cv-section"><h2 class="cv-section-heading">Publications</h2>${userData.publications.map(pub => `<div class="cv-entry"><div class="cv-entry-title">${escapeHTML(pub.title || 'Publication')}</div><div class="cv-entry-sub">${escapeHTML(pub.publisher || 'Publisher')} · ${escapeHTML(pub.year || 'Year')}${pub.link ? ' · <a href="'+escapeHTML(pub.link)+'" target="_blank" style=\"color:'+accent+';\">View</a>' : ''}</div></div>`).join('')}</div>` : ''}
     </div>`;
-
     cvInner.innerHTML = html;
-
     const cvPage = document.getElementById('cvPage');
     const fontMap = { inter: 'Inter, sans-serif', playfair: 'Playfair Display, serif', poppins: 'Poppins, sans-serif', jetbrains: 'JetBrains Mono, monospace' };
     cvPage.style.fontFamily = fontMap[settings.fontStyle] || 'Inter, sans-serif';
     cvPage.style.fontSize = settings.fontSize || '16px';
     cvPage.style.setProperty('--cv-accent', accent);
 }
-
 // ==================== TEMPLATES ====================
 function setTemplate(name, silent = false) {
     userData.settings.template = name;
@@ -502,7 +475,6 @@ function setTemplate(name, silent = false) {
     saveToStorage();
     if (!silent) showToast(`Template: ${name.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase())}`, 'success');
 }
-
 // ==================== INDUSTRY PRESETS ====================
 function applyIndustryPreset(industry) {
     if (!industry) return;
@@ -514,21 +486,18 @@ const presets = {
     'banking_ubl': { accent: '#1a3c6e', summary: 'Motivated banking professional targeting United Bank Limited, with strong skills in corporate and retail banking operations.' },
     'banking_alfalah': { accent: '#1a3c6e', summary: 'Finance professional seeking a role at Bank Alfalah, committed to excellence in customer service and digital banking solutions.' },
     'banking_state_life': { accent: '#1a3c6e', summary: 'Insurance and financial services professional aiming to join State Life Insurance Corporation, with expertise in risk assessment and policy management.' },
-
     // --- IT & Technology ---
     'it': { accent: '#0d7377', summary: 'Innovative technology professional skilled in software development, cloud infrastructure, and digital transformation for Pakistan\'s growing IT sector.' },
     'it_systems': { accent: '#0d7377', summary: 'Technology professional targeting Systems Limited, with expertise in enterprise software, IT consulting, and digital transformation solutions.' },
     'it_arbisoft': { accent: '#0d7377', summary: 'Software engineer passionate about building world-class products, seeking to contribute to Arbisoft\'s global client portfolio.' },
     'it_netsol': { accent: '#0d7377', summary: 'IT professional aiming for NetSol Technologies, specializing in fintech solutions, asset finance, and leasing software development.' },
     'it_ibex': { accent: '#0d7377', summary: 'Customer experience and BPO professional seeking a role at Ibex Pakistan, with expertise in global client service delivery.' },
-
     // --- Telecom ---
     'telecom': { accent: '#2d8a4e', summary: 'Experienced telecommunications specialist with a passion for connectivity and network solutions in Pakistan\'s dynamic telecom industry.' },
     'telecom_jazz': { accent: '#2d8a4e', summary: 'Telecom professional targeting Jazz, Pakistan\'s leading digital operator, with expertise in mobile network operations and digital services.' },
     'telecom_telenor': { accent: '#2d8a4e', summary: 'Telecommunications specialist aiming for Telenor Pakistan, focused on network optimization and delivering seamless connectivity solutions.' },
     'telecom_zong': { accent: '#2d8a4e', summary: 'Telecom professional seeking to join Zong 4G, with a strong background in 4G/LTE network deployment and customer acquisition strategies.' },
     'telecom_ufone': { accent: '#2d8a4e', summary: 'Telecommunications expert targeting Ufone, committed to enhancing Pakistan\'s voice and data communication landscape.' },
-
     // --- Textile & Carpet Manufacturing ---
     'textile': { accent: '#8b5e3c', summary: 'Skilled professional in textile manufacturing and supply chain management, contributing to Pakistan\'s premier textile export industry.' },
     'textile_gulahmed': { accent: '#8b5e3c', summary: 'Textile professional seeking to join Gul Ahmed Textile Mills, with expertise in fabric production, quality control, and export operations.' },
@@ -542,7 +511,6 @@ const presets = {
     'textile_bokhara': { accent: '#8b5e3c', summary: 'Carpet and rug specialist seeking a position at Bokhara House, with deep knowledge of traditional Bokhara rug artistry.' },
     'textile_ayesha': { accent: '#8b5e3c', summary: 'Textile manufacturing professional targeting Ayesha Woollen Mills, specializing in woollen and blended fabric production.' },
     'textile_multan_carpet': { accent: '#8b5e3c', summary: 'Carpet industry professional seeking to join Multan Carpet Industries, with expertise in hand-knotted and machine-made carpet production.' },
-
     // --- Construction & Engineering ---
     'construction': { accent: '#4a3728', summary: 'Construction and engineering professional with expertise in infrastructure projects, site management, and quality assurance for Pakistan\'s growing construction sector.' },
     'construction_zkb': { accent: '#4a3728', summary: 'Civil engineer targeting ZKB Engineers & Constructors, with experience in large-scale infrastructure and building projects across Pakistan.' },
@@ -572,7 +540,6 @@ const presets = {
     'construction_shehanshah': { accent: '#4a3728', summary: 'Builder and developer targeting Shehanshah Estate and Builders, focused on quality residential and commercial construction.' },
     'construction_amer_adnan': { accent: '#4a3728', summary: 'Architectural professional seeking to join Amer Adnan Associates, with expertise in modern architectural design and interior solutions.' },
     'construction_design_tech': { accent: '#4a3728', summary: 'Engineering professional aiming for Design Tech Engineering Solutions, specialized in innovative design and structural engineering.' },
-
     // --- Furniture, Woodwork & Interiors ---
     'furniture': { accent: '#6b4c3b', summary: 'Skilled furniture and interior design professional with expertise in woodwork, space planning, and aesthetic interior solutions for Pakistan\'s growing home and office market.' },
     'furniture_interwood': { accent: '#6b4c3b', summary: 'Furniture professional targeting Interwood Mobel, with expertise in premium furniture design, sales, and customer experience.' },
@@ -590,7 +557,6 @@ const presets = {
     'furniture_ghonsla': { accent: '#6b4c3b', summary: 'Construction and design professional aiming for Ghonsla Construction, with expertise in building and interior finishing.' },
     'furniture_alhaadi': { accent: '#6b4c3b', summary: 'Furniture craftsperson targeting Al Haadi Mobilya, skilled in traditional and contemporary furniture making.' },
     'furniture_transeptia': { accent: '#6b4c3b', summary: 'Construction and interior professional seeking a role at Transeptia Construction Interior & Architect, with a holistic approach to design-build projects.' },
-
     // --- Engineering & Industrial Manufacturing ---
     'engineering': { accent: '#3d5a80', summary: 'Engineering and industrial manufacturing professional with expertise in production, quality management, and operational excellence for Pakistan\'s industrial sector.' },
     'engineering_engro': { accent: '#3d5a80', summary: 'Industrial professional targeting Engro Corporation, with expertise in manufacturing, energy, and agribusiness operations.' },
@@ -604,7 +570,6 @@ const presets = {
     'engineering_honda_atlas': { accent: '#3d5a80', summary: 'Automotive industry professional aiming for Honda Atlas Cars, with a passion for automobile manufacturing and quality engineering.' },
     'engineering_indus_motor': { accent: '#3d5a80', summary: 'Automotive professional targeting Indus Motor Company (Toyota), skilled in lean manufacturing and supply chain management.' },
     'engineering_pak_suzuki': { accent: '#3d5a80', summary: 'Automotive specialist seeking a position at Pak Suzuki Motor Company, with expertise in vehicle assembly and production.' },
-
     // --- Consumer Goods, Retail & FMCG ---
     'fmcg': { accent: '#e07c24', summary: 'FMCG and consumer goods professional with expertise in brand management, distribution, and retail operations for Pakistan\'s fast-moving consumer goods sector.' },
     'fmcg_unilever': { accent: '#e07c24', summary: 'FMCG professional targeting Unilever Pakistan, with a strong background in brand management and consumer marketing.' },
@@ -619,24 +584,20 @@ const presets = {
     'fmcg_carrefour': { accent: '#e07c24', summary: 'Retail industry professional aiming for Carrefour Pakistan, skilled in hypermarket operations and category management.' },
     'fmcg_imtiaz': { accent: '#e07c24', summary: 'Retail professional seeking a position at Imtiaz Super Market, with expertise in retail operations and customer service.' },
     'fmcg_tcs': { accent: '#e07c24', summary: 'Logistics professional targeting TCS Express & Logistics, skilled in courier services, supply chain, and e-commerce fulfillment.' },
-
     // --- Healthcare ---
     'healthcare': { accent: '#2e7d6f', summary: 'Compassionate healthcare professional dedicated to improving patient outcomes in Pakistan\'s medical facilities.' },
     'healthcare_shaukat': { accent: '#2e7d6f', summary: 'Healthcare professional seeking to serve at Shaukat Khanum Memorial Hospital, committed to providing world-class cancer care to all Pakistanis.' },
     'healthcare_aku': { accent: '#2e7d6f', summary: 'Medical professional targeting Aga Khan University Hospital (AKUH), with a commitment to healthcare excellence and academic medicine.' },
     'healthcare_indus_hospital': { accent: '#2e7d6f', summary: 'Healthcare professional aiming for Indus Hospital & Health Network, passionate about free, quality healthcare for underserved communities.' },
-
     // --- Education ---
     'education': { accent: '#4a3f6b', summary: 'Passionate educator committed to academic excellence and student development within Pakistan\'s educational institutions.' },
     'education_lums': { accent: '#4a3f6b', summary: 'Academic professional targeting LUMS, with a strong commitment to research, teaching, and higher education excellence in Pakistan.' },
     'education_beaconhouse': { accent: '#4a3f6b', summary: 'Educator seeking to join Beaconhouse School System, dedicated to shaping young minds through quality K-12 education.' },
     'education_city_school': { accent: '#4a3f6b', summary: 'Teaching professional aiming for The City School, committed to modern pedagogy and holistic student development.' },
-
     // --- NGOs & Social Sector ---
     'ngo': { accent: '#5b8c5a', summary: 'Dedicated social sector professional committed to community development, humanitarian work, and creating positive social impact across Pakistan.' },
     'ngo_saylani': { accent: '#5b8c5a', summary: 'Social welfare professional seeking to serve at Saylani Welfare Trust, committed to poverty alleviation and community empowerment.' },
     'ngo_tcf': { accent: '#5b8c5a', summary: 'Education and development professional targeting The Citizens Foundation (TCF), dedicated to providing quality education to underprivileged children.' },
-
     // --- Miscellaneous ---
     'misc': { accent: '#6c5ce7', summary: 'Versatile professional seeking opportunities in Pakistan\'s diverse business landscape.' },
     'misc_murree': { accent: '#6c5ce7', summary: 'Beverage industry professional targeting Murree Brewery Company, with expertise in production, quality control, and Pakistan\'s heritage brands.' },
@@ -657,7 +618,6 @@ const presets = {
     }
     document.getElementById('industryPreset').value = '';
 }
-
 // ==================== CUSTOMIZATION ====================
 function applyCustomizations(silent = false) {
     userData.settings.accentColor = document.getElementById('accentColorPicker').value;
@@ -676,7 +636,6 @@ function applyCustomizations(silent = false) {
 }
 function openCustomization() { document.getElementById('customizationModal').classList.add('active'); }
 function closeCustomization() { document.getElementById('customizationModal').classList.remove('active'); }
-
 // ==================== CREDITS ====================
 function updateCreditDisplay() {
     document.getElementById('creditCount').textContent = userData.credits;
@@ -690,7 +649,6 @@ function simulatePayment(method) {
     closePaymentModal();
     showToast(`Simulated ${method} payment! +5 credits.`, 'success');
 }
-
 // ==================== EXPORT PDF ====================
 function exportPDF() {
     if (userData.credits <= 0) {
@@ -717,7 +675,6 @@ function exportPDF() {
         showToast('PDF ready! Use "Save as PDF" in print dialog.', 'success');
     }, 300);
 }
-
 function addWatermark() {
     const wm = document.createElement('div');
     wm.id = 'watermark';
@@ -729,7 +686,6 @@ function removeWatermark() {
     const wm = document.getElementById('watermark');
     if (wm) wm.remove();
 }
-
 // ==================== TOAST ====================
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
@@ -742,16 +698,13 @@ function showToast(message, type = 'success') {
     });
     setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
 }
-
 // ==================== MODAL CLOSE ====================
 document.getElementById('paymentModal').addEventListener('click', function(e) { if (e.target === this) closePaymentModal(); });
 document.getElementById('customizationModal').addEventListener('click', function(e) { if (e.target === this) closeCustomization(); });
-
 // Keyboard shortcut
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'e') { e.preventDefault(); exportPDF(); }
 });
-
 // ==================== SEARCHABLE INDUSTRY DROPDOWN ====================
 (function() {
   const industryGroups = [
@@ -893,15 +846,12 @@ document.addEventListener('keydown', function(e) {
       { value: 'misc_airblue', text: 'Airblue' }
     ]}
   ];
-
   const wrapper = document.getElementById('industrySearchWrapper');
   const input = document.getElementById('industrySearchInput');
   const dropdown = document.getElementById('searchDropdown');
   const hiddenSelect = document.getElementById('industryPreset');
   const toggleBtn = document.getElementById('toggleDropdownBtn');
-
   let allOptions = [];
-
   // Flatten the groups
   industryGroups.forEach(group => {
     group.options.forEach(opt => {
@@ -912,12 +862,10 @@ document.addEventListener('keydown', function(e) {
       });
     });
   });
-
   function renderDropdown(filterText = '') {
     dropdown.innerHTML = '';
     const search = filterText.toLowerCase().trim();
     let visibleCount = 0;
-
     industryGroups.forEach(group => {
       const groupMatchedOptions = group.options.filter(opt =>
         opt.text.toLowerCase().includes(search) ||
@@ -925,34 +873,28 @@ document.addEventListener('keydown', function(e) {
         group.label.toLowerCase().includes(search)
       );
       if (groupMatchedOptions.length === 0) return;
-
       const header = document.createElement('div');
       header.className = 'optgroup-label';
       header.textContent = group.label;
       dropdown.appendChild(header);
-
       groupMatchedOptions.forEach(opt => {
         const item = document.createElement('div');
         item.className = 'option-item';
         item.dataset.value = opt.value;
-
         if (search && search.length > 0) {
           const regex = new RegExp(`(${escapeRegExp(search)})`, 'gi');
           item.innerHTML = opt.text.replace(regex, `<mark>$1</mark>`);
         } else {
           item.textContent = opt.text;
         }
-
         if (hiddenSelect.value === opt.value) {
           item.classList.add('selected-highlight');
         }
-
         item.addEventListener('click', () => selectOption(opt.value, opt.text));
         dropdown.appendChild(item);
         visibleCount++;
       });
     });
-
     if (visibleCount === 0) {
       const noResult = document.createElement('div');
       noResult.className = 'option-item';
@@ -961,10 +903,8 @@ document.addEventListener('keydown', function(e) {
       noResult.style.color = 'var(--text-muted)';
       dropdown.appendChild(noResult);
     }
-
     dropdown.classList.add('show');
   }
-
   function selectOption(value, text) {
     hiddenSelect.value = value;
     input.value = text;
@@ -973,16 +913,13 @@ document.addEventListener('keydown', function(e) {
     applyIndustryPreset(value);
     renderDropdown('');
   }
-
   function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
-
   input.addEventListener('input', () => {
     const val = input.value.trim();
     renderDropdown(val);
   });
-
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (dropdown.classList.contains('show')) {
@@ -993,21 +930,18 @@ document.addEventListener('keydown', function(e) {
       toggleBtn.classList.add('open');
     }
   });
-
   input.addEventListener('focus', () => {
     if (!dropdown.classList.contains('show')) {
       renderDropdown(input.value.trim());
       toggleBtn.classList.add('open');
     }
   });
-
   document.addEventListener('click', (e) => {
     if (!wrapper.contains(e.target)) {
       dropdown.classList.remove('show');
       toggleBtn.classList.remove('open');
     }
   });
-
   input.addEventListener('keydown', (e) => {
     if (!dropdown.classList.contains('show')) return;
     const items = Array.from(dropdown.querySelectorAll('.option-item'));
@@ -1036,11 +970,9 @@ document.addEventListener('keydown', function(e) {
       toggleBtn.classList.remove('open');
     }
   });
-
   hiddenSelect.value = '';
   input.value = '';
 })();
-
 // ==================== MOBILE PREVIEW TOGGLE ====================
 const mobileToggle = document.getElementById('mobilePreviewToggle');
 const appContainer = document.getElementById('appContainer');
@@ -1055,29 +987,24 @@ if (mobileToggle) {
     }
   });
 }
-
 // ==================== ACHIEVEMENT EXAMPLE HANDLER ====================
 function showExample(type) {
   const tooltip = document.getElementById('globalExampleTooltip');
   const btn = document.activeElement?.closest('.btn-example');
   if (!tooltip || !btn) return;
-
   if (tooltip.style.display === 'block' && tooltip.dataset.activeType === type) {
     tooltip.style.display = 'none';
     return;
   }
-
   let industry = 'general';
   const selectedIndustry = document.getElementById('industryPreset').value;
   if (selectedIndustry) {
     const parts = selectedIndustry.split('_')[0];
     if (contentExamples[type]?.[parts]) industry = parts;
   }
-
   const exampleText = contentExamples[type]?.[industry] || contentExamples[type]?.['general'] || 'No example available.';
   tooltip.textContent = exampleText;
   tooltip.dataset.activeType = type;
-
   const rect = btn.getBoundingClientRect();
   const tooltipWidth = 280;
   const tooltipHeight = 120;
@@ -1088,11 +1015,9 @@ function showExample(type) {
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
   tooltip.style.display = 'block';
-
   clearTimeout(window.exampleHideTimer);
   window.exampleHideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 12000);
 }
-
 // Attach example click listener globally
 document.addEventListener('click', (e) => {
   if (e.target.closest('.btn-example')) {
@@ -1106,6 +1031,5 @@ document.addEventListener('click', (e) => {
     if (tooltip) tooltip.style.display = 'none';
   }
 });
-
 // ==================== READY ====================
 console.log('CV Builder Pro ready');
